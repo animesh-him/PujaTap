@@ -3,73 +3,47 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Pujo — Listen & Tap (Bengali) — Responsive Fit</title>
+<title>Pujo — Listen & Tap (Bengali) — Fit-to-screen</title>
 <style>
-  :root{--accent:#0f172a;--muted:#666;--gap:10px}
+  :root{--accent:#0f172a;--muted:#666;--gap:8px}
   *{box-sizing:border-box}
-  html,body{height:100%;margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial;background:#fff7f0;color:#111}
-  .wrap{max-width:1100px;margin:0 auto;padding:10px}
-  header{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap}
+  html,body{height:100%;margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial;background:#fff7f0;color:#111;overflow:hidden}
+  .wrap{max-width:1100px;margin:0 auto;padding:8px}
+  header{display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap}
   .title{font-weight:900;font-size:18px}
   .subtitle{font-size:13px;color:var(--muted)}
-  .controls{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-  .btn{padding:8px 12px;border-radius:10px;border:1px solid #cbd5e1;background:#fff;color:#111;cursor:pointer;font-weight:800;white-space:nowrap}
+  .controls{margin-left:auto;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+  .btn{padding:6px 10px;border-radius:10px;border:1px solid #cbd5e1;background:#fff;color:#111;cursor:pointer;font-weight:700;white-space:nowrap;font-size:13px}
   .btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
-  .pill{background:#f3f3f3;padding:6px 10px;border-radius:999px;font-weight:800;display:inline-flex;align-items:center;gap:8px}
-  .levels{display:flex;gap:8px;align-items:center}
-  .level-btn{padding:6px 10px;border-radius:999px;border:1px solid #cbd5e1;background:#fff;cursor:pointer;font-weight:800;color:#111}
+  .pill{background:#f3f3f3;padding:6px 8px;border-radius:999px;font-weight:800;display:inline-flex;align-items:center;gap:6px;font-size:13px}
+  .levels{display:flex;gap:6px;align-items:center}
+  .level-btn{padding:6px 8px;border-radius:999px;border:1px solid #cbd5e1;background:#fff;cursor:pointer;font-weight:800;color:#111;font-size:13px}
   .level-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
-  .small{font-size:13px;color:var(--muted)}
-  /* GRID: 2x2 layout for larger tiles */
-  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--gap);margin-top:12px;height:auto}
-  .card{border-radius:12px;overflow:hidden;border:1px solid #eee;background:#fff;display:flex;flex-direction:column;cursor:pointer;align-items:stretch}
-  /* ensure full image visible: contain */
-  .imgwrap{display:flex;align-items:center;justify-content:center;overflow:hidden;background:#fafafa}
+  .small{font-size:12px;color:var(--muted)}
+  /* GRID: 2x2 layout */
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--gap);margin-top:10px;align-items:stretch;justify-items:stretch}
+  .card{border-radius:10px;overflow:hidden;border:1px solid #eee;background:#fff;display:flex;flex-direction:column;cursor:pointer;align-items:stretch}
+  .imgwrap{display:flex;align-items:center;justify-content:center;overflow:hidden;background:#fafafa;width:100%}
   .imgwrap img{max-width:100%;max-height:100%;object-fit:contain;object-position:center;display:block}
-  .label{height:38px;line-height:18px;padding:8px;text-align:center;font-weight:800;font-size:13px;background:linear-gradient(180deg,transparent,rgba(255,255,255,0.9));white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .training-panel{display:none;margin-top:12px;padding:12px;border-radius:12px;background:#fff;border:1px solid #eee}
-  /* dynamic training area */
-  .training-large{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    margin-bottom:8px;
-    overflow:hidden;
-    background:#fff;
-  }
-  .training-large img{
-    display:block;
-    max-height:100%;
-    max-width:100%;
-    width:auto;
-    height:auto;
-    object-fit:contain;
-    object-position:center;
-    margin:auto;
-    border-radius:8px;
-    background:#fff;
-  }
-  .training-thumb-row{display:flex;gap:8px;overflow:auto;padding:6px 0}
-  .thumb{flex:0 0 auto;width:90px;text-align:center}
-  .thumb img{width:90px;height:70px;object-fit:cover;border-radius:6px;border:2px solid transparent}
+  .label{height:34px;line-height:16px;padding:6px;text-align:center;font-weight:800;font-size:13px;background:linear-gradient(180deg,transparent,rgba(255,255,255,0.9));white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .training-panel{display:none;margin-top:8px;padding:8px;border-radius:10px;background:#fff;border:1px solid #eee}
+  .training-large{display:flex;align-items:center;justify-content:center;margin-bottom:6px;overflow:hidden;background:#fff}
+  .training-large img{display:block;max-width:100%;max-height:100%;object-fit:contain;border-radius:8px}
+  .training-thumb-row{display:flex;gap:6px;overflow:auto;padding:6px 0}
+  .thumb{flex:0 0 auto;width:72px;text-align:center}
+  .thumb img{width:72px;height:56px;object-fit:cover;border-radius:6px;border:2px solid transparent}
   .thumb.current img{border-color:var(--accent)}
-  /* compact status */
-  .status{margin-top:8px;padding:6px 8px;border-radius:8px;background:transparent;border:0;font-size:13px;color:var(--muted)}
+  .status{margin-top:8px;padding:6px 8px;border-radius:6px;background:transparent;border:0;font-size:13px;color:var(--muted)}
   .footer{margin-top:8px;display:flex;justify-content:space-between;align-items:center;gap:8px}
   .footer .credit{font-size:12px;color:var(--muted)}
-  .footer .note{font-size:12px;color:var(--muted);text-align:right}
   .modal-back{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:none;align-items:center;justify-content:center;z-index:1200;padding:12px}
   .modal{background:#fff;padding:14px;border-radius:10px;max-width:920px;width:100%;max-height:86vh;overflow:auto;font-size:13px}
   input[type="text"]{padding:8px;border-radius:8px;border:1px solid #ddd;font-size:13px}
-  /* responsive small adjustments */
-  @media(max-width:640px){
-    .controls{gap:6px}
-    .label{font-size:12px}
-  }
+  @media(max-width:640px){ .title{font-size:16px} .controls .btn{font-size:12px;padding:6px 8px} .pill{font-size:12px} }
 </style>
 </head>
 <body>
-<div class="wrap">
+<div class="wrap" id="wrap">
   <header id="pageHeader">
     <div>
       <div class="title">👂 Pujo — Listen & Tap (Bengali)</div>
@@ -90,7 +64,7 @@
     </div>
   </header>
 
-  <div style="margin-top:8px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+  <div style="margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
     <div class="levels" role="tablist" aria-label="Levels">
       <button id="lvl1" class="level-btn active" data-level="1">Level 1</button>
       <button id="lvl2" class="level-btn" data-level="2">Level 2</button>
@@ -106,7 +80,7 @@
       <div id="trainingLargeWrap" class="training-large">
         <img id="trainingLarge" src="" alt="Training preview">
       </div>
-      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
         <button id="trainPlay" class="btn">▶ Play</button>
         <button id="trainPause" class="btn" disabled>⏸ Pause</button>
         <button id="trainPrev" class="btn">Prev</button>
@@ -121,7 +95,7 @@
         </label>
         <button id="trainStop" class="btn">Stop</button>
       </div>
-      <div id="trainingPreview" class="training-thumb-row" style="margin-top:10px"></div>
+      <div id="trainingPreview" class="training-thumb-row" style="margin-top:8px"></div>
     </section>
 
     <div id="status" class="status" aria-live="polite">Ready — press Start to enable audio.</div>
@@ -140,23 +114,19 @@
 <canvas id="certCanvas" style="display:none"></canvas>
 
 <script>
-/* =========================
-   DATA & CONFIG
-   ========================= */
+/* ========== DATA (same as before) ========== */
 const ITEMS = [
   'prodip','kashphool','dhak','kansorghonta','shankho','kolabou','dhunuchi','pushpo','fol',
   'mishti','peda','batasha','alpona','chandmala','saree','punjabi','alta','trishul','bhog',
   'kosha_kushi','bel_pata','aam_pollob','tulsi_pata','padma_phool','108_prodip','pan_supari',
   'dhan','durba_ghas','chondon_kath_chondon_piri','ghot','narkel','dab','swastik_chinho',
   'sindur','gamcha','pandel','bansh','shal_pata','mondir','onusthan_suchi','roshid_ba_chandar_boi',
-  'thakurer_kathamo','onjoli_ba_pushpanjoli','aroti','poncho_prodip'
+  'thakurer_kathamo','onjoli_ba_pushpanjanjoli','aroti','poncho_prodip'
 ];
 const LEVELS = {1:{secs:60,maxItems:15},2:{secs:120,maxItems:30},3:{secs:180,maxItems:ITEMS.length}};
 const LB_KEY = 'pujo_leaderboard_v1';
 
-/* =========================
-   UI refs & state
-   ========================= */
+/* ========== UI refs ========== */
 const pageHeader = document.getElementById('pageHeader');
 const pageFooter = document.getElementById('pageFooter');
 const mainArea = document.getElementById('mainArea');
@@ -177,223 +147,91 @@ const trainDelay = document.getElementById('trainDelay');
 const statusEl = document.getElementById('status');
 const scoreEl = document.getElementById('score');
 const timerEl = document.getElementById('timer');
-const leaderboardBtn = document.getElementById('leaderboardBtn');
-const shareBtn = document.getElementById('shareBtn');
-const certBtn = document.getElementById('certBtn');
 const levelBtns = Array.from(document.querySelectorAll('.level-btn'));
 const modal = document.getElementById('modal');
 const modalContent = document.getElementById('modalContent');
 const certCanvas = document.getElementById('certCanvas');
 
-let selectedLevel = 1;
-let playing = false;
-let secs = 0;
-let score = 0;
-let timer = null;
-let currentTarget = null;
-let targetPool = [];
-let audioCtx = null;
-let audioBuffers = {};
-let htmlAudio = {};
-let preloadedImages = {};
-let aggressiveAllowed = false;
-let trainIndex = 0;
-let trainPlaying = false;
-let trainTimer = null;
-let soundOn = true;
+let selectedLevel = 1, playing = false, secs = 0, score = 0, timer = null, currentTarget = null, targetPool = [];
+let audioCtx = null, audioBuffers = {}, htmlAudio = {}, preloadedImages = {}, aggressiveAllowed=false;
+let trainIndex=0, trainPlaying=false, trainTimer=null, soundOn=true;
 
-/* =========================
-   Helpers
-   ========================= */
-function log(){/*silent*/} 
+/* ========== helpers ========== */
 function shuffle(a){ return a.slice().map(v=>[Math.random(),v]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]); }
 function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+function stopAllAudio(){ try{ if(audioCtx && audioCtx.close){} }catch(e){} Object.values(htmlAudio).forEach(a=>{ try{ a.pause(); a.currentTime = 0;}catch(e){} }); try{ if(window.speechSynthesis) window.speechSynthesis.cancel(); }catch(e){} }
 
-/* =========================
-   Audio helpers
-   ========================= */
-function ensureAudioContext(){
-  if(audioCtx) return audioCtx;
-  try{
-    const AC = window.AudioContext || window.webkitAudioContext;
-    if(!AC) return null;
-    audioCtx = new AC();
-    if(audioCtx.state === 'suspended') audioCtx.resume().catch(()=>{});
-    return audioCtx;
-  }catch(e){ audioCtx = null; return null; }
-}
-
-let activeSource = null;
-function stopAllAudio(){
-  try{ if(activeSource && activeSource.stop){ try{ activeSource.stop(0); }catch(e){} activeSource = null; } }catch(e){}
-  Object.values(htmlAudio).forEach(a=>{ try{ a.pause(); a.currentTime = 0; }catch(e){} });
-  try{ if(window.speechSynthesis) window.speechSynthesis.cancel(); }catch(e){}
-}
-
+/* ========== minimal audio helpers (use same logic you had) ========== */
+function ensureAudioContext(){ if(audioCtx) return audioCtx; try{ const AC = window.AudioContext||window.webkitAudioContext; if(!AC) return null; audioCtx = new AC(); if(audioCtx.state==='suspended') audioCtx.resume().catch(()=>{}); return audioCtx;}catch(e){ audioCtx=null; return null; } }
 async function fetchAndMaybeDecode(key){
   if(audioBuffers[key] || htmlAudio[key]) return;
   const url = `audio/bn/${key}.mp3`;
   try{
     const res = await fetch(url, {cache:'force-cache'});
-    if(!res.ok) throw new Error('fetch status ' + res.status);
+    if(!res.ok) throw new Error('fetch '+res.status);
     const ab = await res.arrayBuffer();
-    if(aggressiveAllowed && ensureAudioContext()){
-      try{ const decoded = await audioCtx.decodeAudioData(ab); audioBuffers[key] = decoded; return; }catch(e){}
-    }
-    const a = new Audio(url);
-    a.preload = 'auto';
-    htmlAudio[key] = a;
-  }catch(e){
-    try{ const aa = new Audio(url); aa.preload='auto'; htmlAudio[key] = aa; }catch(err){}
-  }
+    if(aggressiveAllowed && ensureAudioContext()){ try{ const decoded = await audioCtx.decodeAudioData(ab); audioBuffers[key] = decoded; return; }catch(e){} }
+    const a = new Audio(url); a.preload='auto'; htmlAudio[key]=a;
+  }catch(e){ try{ const a2 = new Audio(url); a2.preload='auto'; htmlAudio[key]=a2; }catch(err){} }
 }
+function playBufferOrHtml(key){ return new Promise(async resolve=>{ if(!soundOn){ resolve(); return;} stopAllAudio(); if(audioBuffers[key] && ensureAudioContext()){ try{ const src = audioCtx.createBufferSource(); src.buffer = audioBuffers[key]; const g = audioCtx.createGain(); g.gain.value = 1; src.connect(g).connect(audioCtx.destination); src.onended = ()=>resolve(); src.start(0); return;}catch(e){} } try{ const a = htmlAudio[key]||new Audio(`audio/bn/${key}.mp3`); htmlAudio[key]=a; a.onended = ()=>resolve(); a.onerror = ()=>resolve(); const p = a.play(); if(p && p.catch) p.catch(()=>resolve()); }catch(e){ resolve(); } }); }
+async function speakItem(key){ if(!key) return; try{ await fetchAndMaybeDecode(key); await playBufferOrHtml(key); }catch(e){ try{ if('speechSynthesis' in window){ stopAllAudio(); const u=new SpeechSynthesisUtterance(key.replace(/_/g,' ')); u.lang='en-GB'; window.speechSynthesis.cancel(); window.speechSynthesis.speak(u); await new Promise(r=>{u.onend=r; setTimeout(r,800)}); } }catch(err){} } }
 
-function playBufferOrHtml(key){
-  return new Promise(async (resolve)=>{
-    if(!soundOn){ resolve(); return; }
-    stopAllAudio();
-    if(audioBuffers[key] && ensureAudioContext()){
-      try{
-        const src = audioCtx.createBufferSource();
-        src.buffer = audioBuffers[key];
-        const gain = audioCtx.createGain(); gain.gain.value = 1;
-        src.connect(gain).connect(audioCtx.destination);
-        activeSource = src;
-        src.onended = ()=>{ activeSource = null; resolve(); };
-        src.start(0);
-        return;
-      }catch(e){}
-    }
-    try{
-      const a = htmlAudio[key] || new Audio(`audio/bn/${key}.mp3`);
-      htmlAudio[key] = a;
-      a.onended = ()=>resolve();
-      a.onerror = ()=>{ resolve(); };
-      const p = a.play();
-      if(p && p.catch) p.catch(()=>resolve());
-    }catch(e){ resolve(); }
-  });
-}
+/* ========== preload images (first 4) ========== */
+function preloadImages(keys){ keys.forEach(k=>{ if(preloadedImages[k]) return; const i=new Image(); i.src = `images/pujo/${k}.jpg`; preloadedImages[k]=i; }); }
+async function backgroundPreload(){ aggressiveAllowed = (navigator.deviceMemory||0)>=4 || (navigator.hardwareConcurrency||0)>=4; const first = ITEMS.slice(0,4); preloadImages(first); await Promise.all(first.map(k=>fetchAndMaybeDecode(k))).catch(()=>{}); if(aggressiveAllowed){ for(let i=0;i<ITEMS.length;i+=6){ const set = ITEMS.slice(i,i+6); preloadImages(set); await Promise.all(set.map(k=>fetchAndMaybeDecode(k))).catch(()=>{}); await new Promise(r=>setTimeout(r,140)); } } else { for(let i=0;i<ITEMS.length;i+=4){ const set = ITEMS.slice(i,i+4); preloadImages(set); await Promise.all(set.map(k=>fetchAndMaybeDecode(k))).catch(()=>{}); await new Promise(r=>setTimeout(r,400)); } } }
 
-async function speakItem(key){
-  if(!key) return;
-  try{
-    await fetchAndMaybeDecode(key);
-    await playBufferOrHtml(key);
-  }catch(e){
-    try{
-      if('speechSynthesis' in window){
-        stopAllAudio();
-        const u = new SpeechSynthesisUtterance(key.replace(/_/g,' '));
-        u.lang = 'en-GB';
-        window.speechSynthesis.cancel();
-        window.speechSynthesis.speak(u);
-        await new Promise(r=>{ u.onend = r; setTimeout(r,1200); });
-      }
-    }catch(err){}
-  }
-}
-
-async function speakText(text){
-  stopAllAudio();
-  if('speechSynthesis' in window){
-    try{
-      const u = new SpeechSynthesisUtterance(text);
-      u.lang = 'en-GB';
-      window.speechSynthesis.cancel();
-      window.speechSynthesis.speak(u);
-      await new Promise(r=>{ u.onend = r; setTimeout(r,700); });
-    }catch(e){}
-  }
-}
-
-/* =========================
-   Preload & background
-   ========================= */
-function capabilityCheck(){ const mem = navigator.deviceMemory || 0; const cores = navigator.hardwareConcurrency || 0; return (mem >= 4 || cores >= 4); }
-function preloadImages(keys){ keys.forEach(k=>{ if(preloadedImages[k]) return; const img=new Image(); img.src=`images/pujo/${k}.jpg`; preloadedImages[k]=img; }); }
-async function backgroundPreload(){
-  aggressiveAllowed = capabilityCheck();
-  const first = ITEMS.slice(0,4);
-  preloadImages(first);
-  await Promise.all(first.map(k=>fetchAndMaybeDecode(k))).catch(()=>{});
-  if(aggressiveAllowed){
-    const batch = 6;
-    for(let i=0;i<ITEMS.length;i+=batch){
-      const set=ITEMS.slice(i,i+batch);
-      preloadImages(set);
-      await Promise.all(set.map(k=>fetchAndMaybeDecode(k))).catch(()=>{});
-      await new Promise(r=>setTimeout(r,180));
-    }
-  } else {
-    for(let i=0;i<ITEMS.length;i+=4){
-      const set=ITEMS.slice(i,i+4);
-      preloadImages(set);
-      await Promise.all(set.map(k=>fetchAndMaybeDecode(k))).catch(()=>{});
-      await new Promise(r=>setTimeout(r,600));
-    }
-  }
-}
-
-/* =========================
-   Layout adjuster - fits header+grid+footer into viewport
-   ========================= */
+/* ========== CORE: fit-to-screen layout adjuster ========== */
 function adjustLayout(){
-  // measure header/footer heights (include margins)
-  const headerRect = pageHeader.getBoundingClientRect();
-  const footerRect = pageFooter.getBoundingClientRect();
-  const statusRect = statusEl.getBoundingClientRect();
-  const controlsHeight = headerRect.height;
-  const footerHeight = footerRect.height;
-  const statusHeight = statusRect.height;
+  // measure header + footer heights
+  const headerH = pageHeader.getBoundingClientRect().height;
+  const footerH = pageFooter.getBoundingClientRect().height;
+  const statusH = document.getElementById('status').getBoundingClientRect().height;
   const viewportH = window.innerHeight;
-  // we want mainArea (grid or training panel) to fit into remaining space
-  const reserved = Math.ceil(controlsHeight + footerHeight + statusHeight + 32); // little buffer
-  const avail = Math.max(180, viewportH - reserved);
-  // If training panel visible, set trainingLargeWrap height to most of avail
+  // remaining vertical space for main area
+  const reserved = Math.ceil(headerH + footerH + statusH + 14);
+  let avail = Math.max(160, viewportH - reserved);
+  // If training open -> allocate most of avail to training image
   if(trainingPanel.style.display === 'block'){
-    // trainingLargeWrap takes ~80% of avail, thumbnails & controls take rest
-    const trainingLargeH = Math.max(140, Math.round(avail * 0.78));
+    const trainingLargeH = Math.max(120, Math.floor(avail * 0.78));
     trainingLargeWrap.style.height = trainingLargeH + 'px';
-    // ensure grid hidden
+    document.getElementById('trainingPreview').style.maxHeight = Math.max(56, Math.floor(avail * 0.18)) + 'px';
     grid.style.display = 'none';
   } else {
-    // show grid area: we have 2 rows -> card height = (avail - gap)/2 - labelHeight
-    const gap = 10;
-    const labelH = 38;
-    const cardH = Math.max(100, Math.floor((avail - gap) / 2) - labelH);
-    // apply height to all cards
+    // grid visible: 2 rows -> compute card height so two rows + labels fill avail
+    const labelH = 34;
+    const gap = 8;
+    // take into account 2 rows so card image area = (avail - gap)/2 - labelH - smallBuffer
+    const smallBuffer = 8;
+    let cardTotalH = Math.max(110, Math.floor((avail - gap)/2) - smallBuffer);
+    // cardTotalH includes both image area + label; ensure not too big
+    // set each card height
     Array.from(document.getElementsByClassName('card')).forEach(c=>{
-      c.style.minHeight = cardH + labelH + 'px';
-      c.style.height = cardH + labelH + 'px';
+      c.style.height = (cardTotalH) + 'px';
+      c.style.minHeight = (cardTotalH) + 'px';
     });
     trainingLargeWrap.style.height = '';
     grid.style.display = '';
   }
+  // final small timeout to ensure repaint
+  setTimeout(()=>{},50);
 }
+function scheduleAdjust(){ setTimeout(adjustLayout,60); }
 
-// call adjustLayout after small delay to ensure DOM has rendered
-function scheduleAdjust(){
-  setTimeout(adjustLayout, 80);
-}
-
-/* =========================
-   UI builders & game logic
-   ========================= */
+/* ========== build grid ========== */
 function buildGrid(keys){
   grid.innerHTML = '';
   const hideLabels = selectedLevel === 3;
   preloadImages(keys);
-  keys.forEach((k,i)=>{
-    const c = document.createElement('button'); c.className = 'card'; c.type='button'; c.dataset.key = k;
-    const iw = document.createElement('div'); iw.className = 'imgwrap';
+  keys.forEach(k=>{
+    const c = document.createElement('button'); c.className='card'; c.type='button'; c.dataset.key=k;
+    const iw = document.createElement('div'); iw.className='imgwrap';
     const img = document.createElement('img'); img.alt = k;
-    if(preloadedImages[k] && preloadedImages[k].src) img.src = preloadedImages[k].src;
-    else img.src = `images/pujo/${k}.jpg`;
-    img.onerror = ()=>{ img.style.opacity = 0.4; };
+    if(preloadedImages[k] && preloadedImages[k].src) img.src = preloadedImages[k].src; else img.src = `images/pujo/${k}.jpg`;
+    img.onerror = ()=>{ img.style.opacity=0.45; };
     iw.appendChild(img);
     c.appendChild(iw);
-    const lbl = document.createElement('div'); lbl.className = 'label'; lbl.textContent = k;
+    const lbl = document.createElement('div'); lbl.className='label'; lbl.textContent = k;
     if(hideLabels) lbl.style.display = 'none';
     c.appendChild(lbl);
     c.addEventListener('click', ()=>onTileClick(k));
@@ -402,8 +240,9 @@ function buildGrid(keys){
   scheduleAdjust();
 }
 
+/* ========== round logic ========== */
 function makeRoundPool(){
-  if(!targetPool || targetPool.length === 0){
+  if(!targetPool || targetPool.length===0){
     const cfg = LEVELS[selectedLevel];
     const poolSize = Math.min(cfg.maxItems, ITEMS.length);
     targetPool = shuffle(ITEMS).slice(0, poolSize);
@@ -430,21 +269,18 @@ function onTileClick(key){
   }
   if(!playing) return;
   if(!currentTarget) return;
-  if(key === currentTarget){
+  if(key===currentTarget){
     score++; scoreEl.textContent = score;
-    statusEl.textContent = '✅ ' + pick(['Brilliant!','Great!','Nice!','Super!']);
-    setTimeout(()=>{ if(playing) startNextRound(); }, 350);
+    statusEl.textContent = '✅ ' + pick(['Brilliant!','Great!','Nice!']);
+    setTimeout(()=>{ if(playing) startNextRound(); }, 300);
   } else {
     score = Math.max(0, score-1); scoreEl.textContent = score;
-    statusEl.textContent = pick(['Almost—try again!','So close!','Keep going!']);
+    statusEl.textContent = pick(['Almost—try again!','So close!']);
   }
 }
+function computeFinalScore(scoreVal,timeRem){ return (scoreVal*1000) + Math.floor(timeRem*5); }
 
-function computeFinalScore(scoreVal, timeRem){ return (scoreVal * 1000) + Math.floor(timeRem*5); }
-
-/* =========================
-   Controls & flow
-   ========================= */
+/* ========== controls ========== */
 function startGame(){
   ensureAudioContext();
   stopAllAudio();
@@ -456,17 +292,16 @@ function startGame(){
   if(timer) clearInterval(timer);
   timer = setInterval(()=>{
     secs--; timerEl.textContent = secs;
-    if(secs <= 0){
-      clearInterval(timer);
-      playing = false;
+    if(secs<=0){
+      clearInterval(timer); playing=false;
       const final = computeFinalScore(score, secs);
       const endText = `Game finished. Your score is ${score}.`;
       statusEl.textContent = `Game finished — Your score: ${score}.`;
-      speakText(endText).catch(()=>{});
-      saveResultToLeaderboard({name:'Anonymous',score, timeRemaining:secs, finalScore:final, level:selectedLevel, when:Date.now()});
-      openResultModal(score, secs, final);
+      speakItem(null).catch(()=>{});
+      saveResultToLeaderboard({name:'Anonymous',score,timeRemaining:secs,finalScore:final,level:selectedLevel,when:Date.now()});
+      openResultModal(score,secs,final);
     }
-  }, 1000);
+  },1000);
   startNextRound();
 }
 
@@ -477,219 +312,52 @@ startBtn.addEventListener('click', ()=>{
   startGame();
 });
 
-muteBtn.addEventListener('click', ()=>{
-  soundOn = !soundOn;
-  muteBtn.textContent = soundOn ? '🔊 On' : '🔇 Off';
-  if(!soundOn) stopAllAudio();
-});
+muteBtn.addEventListener('click', ()=>{ soundOn = !soundOn; muteBtn.textContent = soundOn ? '🔊 On' : '🔇 Off'; if(!soundOn) stopAllAudio(); });
 
-levelBtns.forEach(b=>{
-  b.addEventListener('click', ()=>{
-    levelBtns.forEach(x=>x.classList.remove('active'));
-    b.classList.add('active');
-    selectedLevel = Number(b.dataset.level);
-    statusEl.textContent = `Level ${selectedLevel} selected. Press Start.`;
-    buildGrid(ITEMS.slice(0,4));
-  });
-});
+levelBtns.forEach(b=>{ b.addEventListener('click', ()=>{ levelBtns.forEach(x=>x.classList.remove('active')); b.classList.add('active'); selectedLevel = Number(b.dataset.level); statusEl.textContent = `Level ${selectedLevel} selected. Press Start.`; buildGrid(ITEMS.slice(0,4)); }); });
 
-/* =========================
-   Training module (stable)
-   ========================= */
-function openTraining(){
-  trainingPanel.style.display = 'block';
-  trainingPanel.setAttribute('aria-hidden','false');
-  grid.style.display = 'none';
-  renderTrainingPreview();
-  trainIndex = 0;
-  showTrainingLarge(ITEMS[0]);
-  statusEl.textContent = 'Training mode: previewing items';
-  scheduleAdjust();
-}
-function closeTraining(){
-  trainingPanel.style.display = 'none';
-  trainingPanel.setAttribute('aria-hidden','true');
-  grid.style.display = '';
-  stopTraining();
-  buildGrid(ITEMS.slice(0,4));
-  statusEl.textContent = 'Training closed';
-  scheduleAdjust();
-}
-trainToggle.addEventListener('click', ()=>{
-  const open = trainingPanel.style.display === 'block';
-  if(open) closeTraining(); else openTraining();
-});
+/* ========== training module ========== */
+function openTraining(){ trainingPanel.style.display='block'; trainingPanel.setAttribute('aria-hidden','false'); grid.style.display='none'; renderTrainingPreview(); trainIndex=0; showTrainingLarge(ITEMS[0]); statusEl.textContent='Training mode: previewing items'; scheduleAdjust(); }
+function closeTraining(){ trainingPanel.style.display='none'; trainingPanel.setAttribute('aria-hidden','true'); grid.style.display=''; stopTraining(); buildGrid(ITEMS.slice(0,4)); statusEl.textContent='Training closed'; scheduleAdjust(); }
+trainToggle.addEventListener('click', ()=>{ const open = trainingPanel.style.display==='block'; if(open) closeTraining(); else openTraining(); });
 
-function renderTrainingPreview(){
-  trainingPreview.innerHTML = '';
-  ITEMS.forEach((k, idx)=>{
-    const d = document.createElement('div'); d.className = 'thumb';
-    const img = document.createElement('img'); img.alt = k; img.src = `images/pujo/${k}.jpg`;
-    img.addEventListener('error', ()=>{ img.style.opacity = 0.4; });
-    d.appendChild(img);
-    d.addEventListener('click', ()=>{ pauseTraining(); trainIndex = idx; showTrainingLarge(k); speakItem(k); });
-    trainingPreview.appendChild(d);
-  });
-}
+function renderTrainingPreview(){ trainingPreview.innerHTML=''; ITEMS.forEach((k,idx)=>{ const d=document.createElement('div'); d.className='thumb'; const img=document.createElement('img'); img.alt=k; img.src=`images/pujo/${k}.jpg`; img.addEventListener('error',()=>{img.style.opacity=0.45}); d.appendChild(img); d.addEventListener('click',()=>{ pauseTraining(); trainIndex=idx; showTrainingLarge(k); speakItem(k); }); trainingPreview.appendChild(d); }); }
 
-/* improved showTrainingLarge */
-function showTrainingLarge(key){
-  if(preloadedImages[key] && preloadedImages[key].src) trainingLarge.src = preloadedImages[key].src;
-  else trainingLarge.src = `images/pujo/${key}.jpg`;
-  Array.from(trainingPreview.children).forEach((n,i)=> n.classList.toggle('current', ITEMS[i]===key));
-  const idx = ITEMS.indexOf(key);
-  if(idx >= 0){
-    setTimeout(()=> {
-      const el = trainingPreview.children[idx];
-      if(el && el.scrollIntoView) el.scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'});
-      // reflow trick
-      void trainingLarge.offsetHeight;
-      scheduleAdjust();
-    }, 60);
-  }
-}
+function showTrainingLarge(key){ if(preloadedImages[key] && preloadedImages[key].src) trainingLarge.src = preloadedImages[key].src; else trainingLarge.src = `images/pujo/${key}.jpg`; Array.from(trainingPreview.children).forEach((n,i)=> n.classList.toggle('current', ITEMS[i]===key)); const idx=ITEMS.indexOf(key); if(idx>=0){ setTimeout(()=>{ const el=trainingPreview.children[idx]; if(el && el.scrollIntoView) el.scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'}); scheduleAdjust(); },60); } }
 
-/* training autoplay loop */
-async function trainingLoop(){
-  while(trainPlaying){
-    const key = ITEMS[trainIndex];
-    showTrainingLarge(key);
-    await fetchAndMaybeDecode(key).catch(()=>{});
-    await speakItem(key);
-    if(!trainPlaying) break;
-    const delay = Number(trainDelay.value) || 1000;
-    await new Promise(r => trainTimer = setTimeout(r, delay));
-    trainIndex = (trainIndex + 1) % ITEMS.length;
-  }
-  if(!trainPlaying){
-    // stopped by user
-  } else {
-    const tmsg = 'Training finished. You are ready for the game now. Start playing.';
-    statusEl.textContent = tmsg;
-    speakText(tmsg).catch(()=>{});
-  }
-}
-function startTraining(){ if(trainPlaying) return; trainPlaying = true; trainPlay.disabled=true; trainPause.disabled=false; trainingLoop(); }
-function pauseTraining(){ trainPlaying = false; trainPlay.disabled=false; trainPause.disabled=true; if(trainTimer){ clearTimeout(trainTimer); trainTimer=null; } stopAllAudio(); }
-function stopTraining(){ pauseTraining(); trainIndex = 0; trainingLarge.src=''; Array.from(trainingPreview.children).forEach(n=> n.classList.remove('current')); }
+async function trainingLoop(){ while(trainPlaying){ const key = ITEMS[trainIndex]; showTrainingLarge(key); await fetchAndMaybeDecode(key).catch(()=>{}); await speakItem(key); if(!trainPlaying) break; const delay = Number(trainDelay.value) || 1000; await new Promise(r => trainTimer = setTimeout(r, delay)); trainIndex = (trainIndex+1)%ITEMS.length; } if(trainPlaying===false){} else { const tmsg='Training finished. You are ready for the game now. Start playing.'; statusEl.textContent = tmsg; try{ const u=new SpeechSynthesisUtterance(tmsg); u.lang='en-GB'; window.speechSynthesis.cancel(); window.speechSynthesis.speak(u); }catch(e){} } }
+function startTraining(){ if(trainPlaying) return; trainPlaying=true; trainPlay.disabled=true; trainPause.disabled=false; trainingLoop(); }
+function pauseTraining(){ trainPlaying=false; trainPlay.disabled=false; trainPause.disabled=true; if(trainTimer){ clearTimeout(trainTimer); trainTimer=null; } stopAllAudio(); }
+function stopTraining(){ pauseTraining(); trainIndex=0; trainingLarge.src=''; Array.from(trainingPreview.children).forEach(n=> n.classList.remove('current')); }
 
 trainPlay.addEventListener('click', ()=>{ if(trainingPanel.style.display!=='block') openTraining(); startTraining(); scheduleAdjust(); });
 trainPause.addEventListener('click', pauseTraining);
 trainNext.addEventListener('click', ()=>{ pauseTraining(); trainIndex=(trainIndex+1)%ITEMS.length; showTrainingLarge(ITEMS[trainIndex]); speakItem(ITEMS[trainIndex]); scheduleAdjust(); });
 trainPrev.addEventListener('click', ()=>{ pauseTraining(); trainIndex=(trainIndex-1+ITEMS.length)%ITEMS.length; showTrainingLarge(ITEMS[trainIndex]); speakItem(ITEMS[trainIndex]); scheduleAdjust(); });
-trainStop.addEventListener('click', ()=>{
-  stopTraining();
-  const tmsg = 'Training finished. You are ready for the game now. Start playing.';
-  statusEl.textContent = tmsg;
-  speakText(tmsg).catch(()=>{});
-  if(trainingPanel.style.display === 'block') closeTraining();
-});
+trainStop.addEventListener('click', ()=>{ stopTraining(); const tmsg='Training finished. You are ready for the game now. Start playing.'; statusEl.textContent = tmsg; try{ const u=new SpeechSynthesisUtterance(tmsg); u.lang='en-GB'; window.speechSynthesis.cancel(); window.speechSynthesis.speak(u); }catch(e){} if(trainingPanel.style.display==='block') closeTraining(); });
 
-/* =========================
-   Leaderboard / share / certificate (unchanged)
-   ========================= */
-function saveResultToLeaderboard(entry){
-  try{
-    const lb = JSON.parse(localStorage.getItem(LB_KEY) || '[]');
-    lb.push(entry);
-    lb.sort((a,b)=> b.finalScore - a.finalScore || b.score - a.score || a.timeRemaining - b.timeRemaining);
-    localStorage.setItem(LB_KEY, JSON.stringify(lb.slice(0,200)));
-  }catch(e){}
-}
-function loadLeaderboard(){ try{ return JSON.parse(localStorage.getItem(LB_KEY) || '[]'); }catch(e){ return []; } }
-
-function openResultModal(scoreVal,timeRem,finalScoreVal){
-  const badge = finalScoreVal >= 20000 ? 'Gold' : finalScoreVal >= 12000 ? 'Silver' : 'Bronze';
-  const html = `
-    <h2>Round complete</h2>
-    <p>Score: <b>${scoreVal}</b> • Time remaining: <b>${timeRem}</b>s • Final score: <b>${finalScoreVal}</b></p>
-    <p>Badge: <b>${badge}</b></p>
-    <div style="display:flex;gap:8px;align-items:center;margin-top:10px">
-      <input id="playerName" placeholder="Your name (optional)" style="padding:8px;border:1px solid #ddd;border-radius:8px;width:220px" />
-      <button id="saveScoreBtn" class="btn">Save</button>
-      <button id="shareLinkBtn" class="btn">Share</button>
-      <button id="downloadCertBtn" class="btn">Certificate</button>
-      <button id="closeModalBtn" class="btn">Close</button>
-    </div>
-  `;
-  openModal(html);
-  document.getElementById('closeModalBtn').addEventListener('click', closeModal);
-  document.getElementById('saveScoreBtn').addEventListener('click', ()=>{
-    const name = document.getElementById('playerName').value.trim() || 'Anonymous';
-    saveResultToLeaderboard({name,score:scoreVal,timeRemaining:timeRem,finalScore:finalScoreVal,level:selectedLevel,when:Date.now()});
-    alert('Saved to local leaderboard');
-    closeModal();
-  });
-  document.getElementById('shareLinkBtn').addEventListener('click', ()=>{
-    const payload = {name:(document.getElementById('playerName').value.trim()||'Anonymous'),score:scoreVal,timeRemaining:timeRem,finalScore:finalScoreVal,level:selectedLevel,when:Date.now()};
-    const url = generateShareURL(payload);
-    if(navigator.share){ navigator.share({title:'Pujo score',text:`I scored ${payload.score}`,url}).catch(()=>copyToClipboard(url).then(()=>alert('Link copied'))); }
-    else copyToClipboard(url).then(()=>alert('Link copied')).catch(()=>prompt('Copy this link:', url));
-  });
-  document.getElementById('downloadCertBtn').addEventListener('click', ()=>{
-    const name = document.getElementById('playerName').value.trim() || 'Anonymous';
-    generateCertificate(name, selectedLevel, scoreVal, timeRem, finalScoreVal);
-  });
-}
-
-leaderboardBtn.addEventListener('click', ()=>{
-  const lb = loadLeaderboard();
-  const rows = lb.map((r,i)=>`<tr><td>${i+1}</td><td>${escapeHtml(r.name)}</td><td>${r.score}</td><td>${r.timeRemaining}s</td><td>${r.finalScore}</td><td>${r.level}</td><td>${new Date(r.when).toLocaleString()}</td></tr>`).join('') || '<tr><td colspan="7">No entries</td></tr>';
-  const html = `<h2>Local Leaderboard</h2><div style="overflow:auto"><table style="width:100%;border-collapse:collapse"><thead><tr><th>#</th><th>Name</th><th>Score</th><th>Time</th><th>Final</th><th>Level</th><th>When</th></tr></thead><tbody>${rows}</tbody></table></div><div style="margin-top:10px;display:flex;gap:8px"><button id="exportBtn" class="btn">Export JSON</button><button id="closeLB" class="btn">Close</button></div>`;
-  openModal(html);
-  document.getElementById('closeLB').addEventListener('click', closeModal);
-  document.getElementById('exportBtn').addEventListener('click', ()=>{ const data = JSON.stringify(lb, null, 2); downloadText('pujo_leaderboard.json', data); });
-});
-
-shareBtn.addEventListener('click', ()=>{
-  const lb = loadLeaderboard();
-  const last = lb[0];
-  if(!last){ copyToClipboard(location.href).then(()=>alert('Game link copied')); return; }
-  const url = generateShareURL(last);
-  copyToClipboard(url).then(()=>alert('Share link copied!'));
-});
-
-certBtn.addEventListener('click', ()=>{
-  const lb = loadLeaderboard();
-  if(!lb[0]){ alert('No saved result yet'); return; }
-  const r = lb[0];
-  generateCertificate(r.name || 'Player', r.level, r.score, r.timeRemaining, r.finalScore);
-});
-
-function generateShareURL(payload){ try{ const s = btoa(unescape(encodeURIComponent(JSON.stringify(payload)))); return location.origin + location.pathname + '?r=' + s; }catch(e){ return location.href; } }
-function tryReadShared(){ try{ const params = new URLSearchParams(location.search); const r = params.get('r'); if(!r) return null; return JSON.parse(decodeURIComponent(escape(atob(r)))); }catch(e){ return null; } }
-
-function openModal(html){ modalContent.innerHTML = html; modal.style.display = 'flex'; modal.setAttribute('aria-hidden','false'); }
-function closeModal(){ modal.style.display = 'none'; modal.setAttribute('aria-hidden','true'); modalContent.innerHTML = ''; }
-modal.addEventListener('click', (e)=>{ if(e.target === modal) closeModal(); });
-function downloadText(filename, text){ const blob = new Blob([text], {type:'application/json'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url); }
+/* ========== leaderboard / share / cert (unchanged small helpers) ========== */
+function saveResultToLeaderboard(entry){ try{ const lb = JSON.parse(localStorage.getItem(LB_KEY)||'[]'); lb.push(entry); lb.sort((a,b)=> b.finalScore - a.finalScore || b.score - a.score || a.timeRemaining - b.timeRemaining); localStorage.setItem(LB_KEY, JSON.stringify(lb.slice(0,200))); }catch(e){} }
+function loadLeaderboard(){ try{ return JSON.parse(localStorage.getItem(LB_KEY)||'[]'); }catch(e){ return []; } }
+function openResultModal(scoreVal,timeRem,finalScoreVal){ const badge = finalScoreVal>=20000?'Gold':finalScoreVal>=12000?'Silver':'Bronze'; const html = `<h2>Round complete</h2><p>Score: <b>${scoreVal}</b> • Time remaining: <b>${timeRem}</b>s • Final score: <b>${finalScoreVal}</b></p><p>Badge: <b>${badge}</b></p><div style="display:flex;gap:8px;align-items:center;margin-top:10px"><input id="playerName" placeholder="Your name (optional)" style="padding:8px;border:1px solid #ddd;border-radius:8px;width:220px" /><button id="saveScoreBtn" class="btn">Save</button><button id="shareLinkBtn" class="btn">Share</button><button id="downloadCertBtn" class="btn">Certificate</button><button id="closeModalBtn" class="btn">Close</button></div>`; openModal(html); document.getElementById('closeModalBtn').addEventListener('click', closeModal); document.getElementById('saveScoreBtn').addEventListener('click', ()=>{ const name = document.getElementById('playerName').value.trim() || 'Anonymous'; saveResultToLeaderboard({name,score:scoreVal,timeRemaining:timeRem,finalScore:finalScoreVal,level:selectedLevel,when:Date.now()}); alert('Saved to local leaderboard'); closeModal(); }); document.getElementById('shareLinkBtn').addEventListener('click', ()=>{ const payload={name:(document.getElementById('playerName').value.trim()||'Anonymous'),score:scoreVal,timeRemaining:timeRem,finalScore:finalScoreVal,level:selectedLevel,when:Date.now()}; const url = generateShareURL(payload); if(navigator.share){ navigator.share({title:'Pujo score',text:`I scored ${payload.score}`,url}).catch(()=>copyToClipboard(url).then(()=>alert('Link copied'))); } else copyToClipboard(url).then(()=>alert('Link copied')); }); document.getElementById('downloadCertBtn').addEventListener('click', ()=>{ const name = document.getElementById('playerName').value.trim() || 'Anonymous'; generateCertificate(name,selectedLevel,scoreVal,timeRem,finalScoreVal); }); }
+function generateShareURL(payload){ try{ const s=btoa(unescape(encodeURIComponent(JSON.stringify(payload)))); return location.origin+location.pathname+'?r='+s;}catch(e){return location.href;} }
+function tryReadShared(){ try{ const params=new URLSearchParams(location.search); const r=params.get('r'); if(!r) return null; return JSON.parse(decodeURIComponent(escape(atob(r)))); }catch(e){return null;} }
+function openModal(html){ modalContent.innerHTML = html; modal.style.display='flex'; modal.setAttribute('aria-hidden','false'); }
+function closeModal(){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); modalContent.innerHTML=''; }
+modal.addEventListener('click',(e)=>{ if(e.target===modal) closeModal(); });
+function downloadText(filename,text){ const blob=new Blob([text],{type:'application/json'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url); }
 function copyToClipboard(txt){ if(navigator.clipboard) return navigator.clipboard.writeText(txt); return Promise.reject(); }
 function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function generateCertificate(name,level,scoreVal,timeRem,finalScoreVal){ const canvas=certCanvas; const w=1200,h=675; canvas.width=w; canvas.height=h; const ctx=canvas.getContext('2d'); ctx.fillStyle='#fff7f0'; ctx.fillRect(0,0,w,h); ctx.fillStyle='#111'; ctx.font='bold 48px sans-serif'; ctx.textAlign='center'; ctx.fillText('Pujo — Tap & Play',w/2,100); ctx.font='20px sans-serif'; ctx.fillText('Presented by Creator and Designer — Animesh',w/2,140); ctx.font='bold 56px sans-serif'; ctx.fillText(name,w/2,260); ctx.font='28px sans-serif'; ctx.fillStyle='#333'; ctx.fillText(`Level ${level} • Score ${scoreVal} • Time left ${timeRem}s`,w/2,330); ctx.fillText(`Final score: ${finalScoreVal}`,w/2,370); canvas.toBlob(blob=>{ const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=`pujo_certificate_${(name||'player').replace(/\s+/g,'_')}.png`; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url); }, 'image/png'); }
 
-function generateCertificate(name, level, scoreVal, timeRem, finalScoreVal){
-  const canvas = certCanvas; const w = 1200, h = 675; canvas.width = w; canvas.height = h; const ctx = canvas.getContext('2d');
-  ctx.fillStyle = '#fff7f0'; ctx.fillRect(0,0,w,h);
-  ctx.fillStyle = '#111'; ctx.font = 'bold 48px sans-serif'; ctx.textAlign='center';
-  ctx.fillText('Pujo — Tap & Play', w/2, 100);
-  ctx.font = '20px sans-serif'; ctx.fillText('Presented by Creator and Designer — Animesh', w/2, 140);
-  ctx.font = 'bold 56px sans-serif'; ctx.fillText(name, w/2, 260);
-  ctx.font = '28px sans-serif'; ctx.fillStyle = '#333'; ctx.fillText(`Level ${level} • Score ${scoreVal} • Time left ${timeRem}s`, w/2, 330);
-  ctx.fillText(`Final score: ${finalScoreVal}`, w/2, 370);
-  canvas.toBlob(blob=>{ const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download = `pujo_certificate_${(name||'player').replace(/\s+/g,'_')}.png`; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url); }, 'image/png');
-}
-
-/* =========================
-   Init & events
-   ========================= */
+/* ========== INIT ========== */
 (function init(){
   buildGrid(ITEMS.slice(0,4));
   statusEl.textContent = 'Ready — press Start to enable audio.';
   backgroundPreload().catch(()=>{});
-  scheduleAdjust(); // initial adjust
+  scheduleAdjust();
   const shared = tryReadShared();
-  if(shared){
-    setTimeout(()=>{ if(confirm(`Challenge from ${shared.name}: Score ${shared.score} — open challenge?`)){ openModal(`<h3>Challenge</h3><p>${escapeHtml(shared.name)} scored ${shared.score} (final ${shared.finalScore})</p><div style="margin-top:10px"><button id="acceptChallenge" class="btn">Accept</button><button id="closeCh" class="btn">Close</button></div>`); document.getElementById('acceptChallenge').addEventListener('click', ()=>{ closeModal(); }); document.getElementById('closeCh').addEventListener('click', closeModal); } }, 600);
-  }
+  if(shared){ setTimeout(()=>{ if(confirm(`Challenge from ${shared.name}: Score ${shared.score} — open challenge?`)){ openModal(`<h3>Challenge</h3><p>${escapeHtml(shared.name)} scored ${shared.score} (final ${shared.finalScore})</p><div style="margin-top:10px"><button id="acceptChallenge" class="btn">Accept</button><button id="closeCh" class="btn">Close</button></div>`); document.getElementById('acceptChallenge').addEventListener('click', ()=>{ closeModal(); }); document.getElementById('closeCh').addEventListener('click', closeModal); } },600); }
 })();
 
 window.addEventListener('resize', ()=>{ scheduleAdjust(); });
