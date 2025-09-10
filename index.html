@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Pujo — Listen & Tap (Bengali) — Fit-to-screen (Footer fixed)</title>
+<title>Pujo — Listen & Tap (Bengali) — Final</title>
 <style>
   :root{--accent:#0f172a;--muted:#666;--gap:8px}
   *{box-sizing:border-box}
@@ -21,14 +21,15 @@
   .level-btn{padding:6px 8px;border-radius:999px;border:1px solid #cbd5e1;background:#fff;cursor:pointer;font-weight:800;color:#111;font-size:13px}
   .level-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
   .small{font-size:12px;color:var(--muted)}
-  main#mainArea{flex:1;min-height:0;overflow:auto;padding-bottom:42px} /* ensure space for footer */
+  main#mainArea{flex:1;min-height:0;overflow:auto;padding-bottom:46px} /* space for footer */
+  /* 2 columns so 4 items fit comfortably on small screens */
   .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--gap);margin-top:10px;align-items:stretch;justify-items:stretch}
-  .card{border-radius:10px;overflow:hidden;border:1px solid #eee;background:#fff;display:flex;flex-direction:column;cursor:pointer;align-items:stretch}
-  .imgwrap{display:flex;align-items:center;justify-content:center;overflow:hidden;background:#fafafa;width:100%}
+  .card{border-radius:10px;overflow:hidden;border:1px solid #eee;background:#fff;display:flex;flex-direction:column;cursor:pointer;align-items:stretch;height:240px}
+  .imgwrap{display:flex;align-items:center;justify-content:center;overflow:hidden;background:#fafafa;width:100%;flex:1}
   .imgwrap img{max-width:100%;max-height:100%;object-fit:contain;object-position:center;display:block}
-  .label{height:34px;line-height:16px;padding:6px;text-align:center;font-weight:800;font-size:13px;background:linear-gradient(180deg,transparent,rgba(255,255,255,0.9));white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .label{height:38px;line-height:18px;padding:8px;text-align:center;font-weight:800;font-size:13px;background:linear-gradient(180deg,transparent,rgba(255,255,255,0.9));white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .training-panel{display:none;margin-top:8px;padding:8px;border-radius:10px;background:#fff;border:1px solid #eee}
-  .training-large{display:flex;align-items:center;justify-content:center;margin-bottom:6px;overflow:hidden;background:#fff}
+  .training-large{display:flex;align-items:center;justify-content:center;margin-bottom:6px;overflow:hidden;background:#fff;height:46vh}
   .training-large img{display:block;max-width:100%;max-height:100%;object-fit:contain;border-radius:8px}
   .training-thumb-row{display:flex;gap:6px;overflow:auto;padding:6px 0}
   .thumb{flex:0 0 auto;width:72px;text-align:center}
@@ -36,7 +37,8 @@
   .thumb.current img{border-color:var(--accent)}
   .status{margin-top:8px;padding:6px 8px;border-radius:6px;background:transparent;border:0;font-size:13px;color:var(--muted)}
   /* Footer black with white text, small font, sticky bottom */
-  .footer{position:sticky;bottom:0;background:#000;color:#fff;padding:4px 6px;font-size:11px;text-align:center;z-index:50}
+  .footer{position:sticky;bottom:0;background:#000;color:#fff;padding:6px 8px;font-size:11px;text-align:center;z-index:50}
+  @media(max-width:640px){ .card{height:200px} .training-large{height:40vh} .label{font-size:12px} }
 </style>
 </head>
 <body>
@@ -47,11 +49,11 @@
       <div class="subtitle">Tap the picture that matches the spoken Bengali word.</div>
     </div>
 
-    <div class="controls">
+    <div class="controls" role="region" aria-label="Top controls">
       <div class="pill">Score: <b id="score">0</b></div>
       <div class="pill">⏱ <b id="timer">0</b>s</div>
 
-      <button id="trainToggle" class="btn">Training</button>
+      <button id="trainToggle" class="btn" aria-pressed="false">Training</button>
       <button id="leaderboardBtn" class="btn">Leaderboard</button>
       <button id="shareBtn" class="btn">Share</button>
       <button id="certBtn" class="btn">Certificate</button>
@@ -62,7 +64,7 @@
   </header>
 
   <div style="margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-    <div class="levels">
+    <div class="levels" role="tablist" aria-label="Levels">
       <button id="lvl1" class="level-btn active" data-level="1">Level 1</button>
       <button id="lvl2" class="level-btn" data-level="2">Level 2</button>
       <button id="lvl3" class="level-btn" data-level="3">Level 3</button>
@@ -71,8 +73,9 @@
   </div>
 
   <main id="mainArea">
-    <div id="grid" class="grid"></div>
-    <section id="trainingPanel" class="training-panel">
+    <div id="grid" class="grid" aria-live="polite" aria-label="Game grid"></div>
+
+    <section id="trainingPanel" class="training-panel" aria-hidden="true">
       <div class="training-large">
         <img id="trainingLarge" src="" alt="Training preview">
       </div>
@@ -93,17 +96,488 @@
       </div>
       <div id="trainingPreview" class="training-thumb-row" style="margin-top:8px"></div>
     </section>
-    <div id="status" class="status">Ready — press Start to enable audio.</div>
+
+    <div id="status" class="status" aria-live="polite">Ready — press Start to enable audio.</div>
   </main>
 
-  <!-- Black footer -->
   <div class="footer">Created and Designed by Animesh, Audio Credits — My Daughter Ishani</div>
 </div>
 
-<!-- Scripts: Keep your full JS logic from the last working file -->
+<div id="modal" class="modal-back" role="dialog" aria-hidden="true" style="display:none">
+  <div class="modal" id="modalContent"></div>
+</div>
+
+<canvas id="certCanvas" style="display:none"></canvas>
+
 <script>
-// Placeholder for your full JS logic
-document.getElementById("grid").innerHTML = "<p style='font-size:14px;color:#666'>[Grid items load here...]</p>";
+/* =========================
+   CONFIG & DATA (copy of your working script, with initial grid set to 4 items)
+   Make sure images are at images/pujo/<key>.jpg and audio at audio/bn/<key>.mp3
+   ========================= */
+
+const ITEMS = [
+  'prodip','kashphool','dhak','kansorghonta','shankho','kolabou','dhunuchi','pushpo','fol',
+  'mishti','peda','batasha','alpona','chandmala','saree','punjabi','alta','trishul','bhog',
+  'kosha_kushi','bel_pata','aam_pollob','tulsi_pata','padma_phool','108_prodip','pan_supari',
+  'dhan','durba_ghas','chondon_kath_chondon_piri','ghot','narkel','dab','swastik_chinho',
+  'sindur','gamcha','pandel','bansh','shal_pata','mondir','onusthan_suchi','roshid_ba_chandar_boi',
+  'thakurer_kathamo','onjoli_ba_pushpanjoli','aroti','poncho_prodip'
+];
+
+const LEVELS = {1:{secs:60,maxItems:15},2:{secs:120,maxItems:30},3:{secs:180,maxItems:ITEMS.length}};
+const LB_KEY = 'pujo_leaderboard_v1';
+
+const grid = document.getElementById('grid');
+const startBtn = document.getElementById('startBtn');
+const muteBtn = document.getElementById('muteBtn');
+const trainToggle = document.getElementById('trainToggle');
+const trainingPanel = document.getElementById('trainingPanel');
+const trainingLarge = document.getElementById('trainingLarge');
+const trainingPreview = document.getElementById('trainingPreview');
+const trainPlay = document.getElementById('trainPlay');
+const trainPause = document.getElementById('trainPause');
+const trainPrev = document.getElementById('trainPrev');
+const trainNext = document.getElementById('trainNext');
+const trainStop = document.getElementById('trainStop');
+const trainDelay = document.getElementById('trainDelay');
+const statusEl = document.getElementById('status');
+const scoreEl = document.getElementById('score');
+const timerEl = document.getElementById('timer');
+const leaderboardBtn = document.getElementById('leaderboardBtn');
+const shareBtn = document.getElementById('shareBtn');
+const certBtn = document.getElementById('certBtn');
+const levelBtns = Array.from(document.querySelectorAll('.level-btn'));
+const modal = document.getElementById('modal');
+const modalContent = document.getElementById('modalContent');
+const certCanvas = document.getElementById('certCanvas');
+
+let selectedLevel = 1;
+let playing = false;
+let secs = 0;
+let score = 0;
+let timer = null;
+let currentTarget = null;
+let targetPool = [];
+let audioCtx = null;
+let audioBuffers = {};
+let htmlAudio = {};
+let preloadedImages = {};
+let aggressiveAllowed = false;
+let trainIndex = 0;
+let trainPlaying = false;
+let trainTimer = null;
+let soundOn = true;
+
+function log(){ /* silent in prod */ }
+
+function ensureAudioContext(){
+  if(audioCtx) return audioCtx;
+  try{
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if(!AC) { return null; }
+    audioCtx = new AC();
+    if(audioCtx.state === 'suspended'){ audioCtx.resume().catch(()=>{}); }
+    return audioCtx;
+  }catch(e){ audioCtx = null; return null; }
+}
+
+let activeSource = null;
+function stopAllAudio(){
+  try{ if(activeSource && activeSource.stop){ try{ activeSource.stop(0); }catch(e){} activeSource = null; } }catch(e){}
+  Object.values(htmlAudio).forEach(a=>{ try{ a.pause(); a.currentTime = 0; }catch(e){} });
+}
+
+async function fetchAndMaybeDecode(key){
+  if(audioBuffers[key] || htmlAudio[key]) return;
+  const url = `audio/bn/${key}.mp3`;
+  try{
+    const res = await fetch(url, {cache:'force-cache'});
+    if(!res.ok) throw new Error('fetch status ' + res.status);
+    const ab = await res.arrayBuffer();
+    if(aggressiveAllowed && ensureAudioContext()){
+      try{
+        const decoded = await audioCtx.decodeAudioData(ab);
+        audioBuffers[key] = decoded;
+        return;
+      }catch(e){}
+    }
+    const a = new Audio(url);
+    a.preload = 'auto';
+    htmlAudio[key] = a;
+  }catch(e){
+    try{ const aa = new Audio(url); aa.preload='auto'; htmlAudio[key] = aa; }catch(err){}
+  }
+}
+
+function playBufferOrHtml(key){
+  return new Promise(async (resolve)=>{
+    if(!soundOn){ resolve(); return; }
+    stopAllAudio();
+    if(audioBuffers[key] && ensureAudioContext()){
+      try{
+        const src = audioCtx.createBufferSource();
+        src.buffer = audioBuffers[key];
+        const gain = audioCtx.createGain(); gain.gain.value = 1;
+        src.connect(gain).connect(audioCtx.destination);
+        activeSource = src;
+        src.onended = ()=>{ activeSource = null; resolve(); };
+        src.start(0);
+        return;
+      }catch(e){}
+    }
+    try{
+      const a = htmlAudio[key] || new Audio(`audio/bn/${key}.mp3`);
+      htmlAudio[key] = a;
+      a.onended = ()=>resolve();
+      a.onerror = ()=>{ resolve(); };
+      const p = a.play();
+      if(p && p.catch) p.catch(()=>resolve());
+    }catch(e){ resolve(); }
+  });
+}
+
+async function speakItem(key){
+  if(!key) return;
+  try{
+    await fetchAndMaybeDecode(key);
+    await playBufferOrHtml(key);
+  }catch(e){
+    try{
+      if('speechSynthesis' in window){
+        stopAllAudio();
+        const u = new SpeechSynthesisUtterance(key.replace(/_/g,' '));
+        u.lang = 'en-GB';
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(u);
+        await new Promise(r=>{ u.onend = r; setTimeout(r,1500); });
+      }
+    }catch(err){}
+  }
+}
+
+function capabilityCheck(){
+  const mem = navigator.deviceMemory || 0;
+  const cores = navigator.hardwareConcurrency || 0;
+  if(mem >= 4 || cores >= 4) return true;
+  return false;
+}
+function preloadImages(keys){
+  keys.forEach(k=>{
+    if(preloadedImages[k]) return;
+    const img = new Image();
+    img.src = `images/pujo/${k}.jpg`;
+    preloadedImages[k] = img;
+  });
+}
+async function backgroundPreload(){
+  aggressiveAllowed = capabilityCheck();
+  const first = ITEMS.slice(0,6);
+  preloadImages(first);
+  await Promise.all(first.map(k=>fetchAndMaybeDecode(k))).catch(()=>{});
+  if(aggressiveAllowed){
+    const batch = 6;
+    for(let i=0;i<ITEMS.length;i+=batch){
+      const set = ITEMS.slice(i,i+batch);
+      preloadImages(set);
+      await Promise.all(set.map(k=>fetchAndMaybeDecode(k))).catch(()=>{});
+      await new Promise(r=>setTimeout(r,180));
+    }
+  } else {
+    for(let i=0;i<ITEMS.length;i+=4){
+      const set = ITEMS.slice(i,i+4);
+      preloadImages(set);
+      await Promise.all(set.map(k=>fetchAndMaybeDecode(k))).catch(()=>{});
+      await new Promise(r=>setTimeout(r,600));
+    }
+  }
+}
+
+function labelTone(hex){
+  if(!hex) return 'black';
+  const r = parseInt(hex.substr(1,2),16), g = parseInt(hex.substr(3,2),16), b = parseInt(hex.substr(5,2),16);
+  const L = 0.2126*(r/255)+0.7152*(g/255)+0.0722*(b/255);
+  return (L < 0.55) ? 'white' : 'black';
+}
+
+function shuffle(a){ return a.slice().map(v=>[Math.random(),v]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]); }
+
+function buildGrid(keys){
+  grid.innerHTML = '';
+  const hideLabels = selectedLevel === 3;
+  preloadImages(keys);
+  keys.forEach((k,i)=>{
+    const c = document.createElement('button'); c.className = 'card'; c.type='button'; c.dataset.key = k;
+    const iw = document.createElement('div'); iw.className = 'imgwrap';
+    const img = document.createElement('img'); img.alt = k;
+    if(preloadedImages[k] && preloadedImages[k].src) img.src = preloadedImages[k].src;
+    else img.src = `images/pujo/${k}.jpg`;
+    img.onerror = ()=>{ img.style.opacity = 0.4; };
+    iw.appendChild(img);
+    c.appendChild(iw);
+    const lbl = document.createElement('div'); lbl.className = 'label'; lbl.textContent = k;
+    if(hideLabels) lbl.style.display = 'none';
+    c.appendChild(lbl);
+    c.addEventListener('click', ()=>onTileClick(k));
+    grid.appendChild(c);
+  });
+}
+
+function makeRoundPool(){
+  if(!targetPool || targetPool.length === 0){
+    const cfg = LEVELS[selectedLevel];
+    const poolSize = Math.min(cfg.maxItems, ITEMS.length);
+    targetPool = shuffle(ITEMS).slice(0, poolSize);
+  }
+  return targetPool.shift();
+}
+
+async function startNextRound(){
+  if(!playing) return;
+  currentTarget = makeRoundPool();
+  const distractors = shuffle(ITEMS.filter(x=>x!==currentTarget)).slice(0,5);
+  const keys = shuffle([currentTarget, ...distractors]).slice(0,4); // show 4 tiles for compact view
+  buildGrid(keys);
+  statusEl.textContent = 'Listen and tap the matching image';
+  await speakItem(currentTarget);
+}
+
+function onTileClick(key){
+  if(!playing && trainingPanel.style.display === 'block'){
+    pauseTraining();
+    showTrainingLarge(key);
+    speakItem(key);
+    return;
+  }
+  if(!playing) return;
+  if(!currentTarget) return;
+  if(key === currentTarget){
+    score++; scoreEl.textContent = score;
+    statusEl.textContent = '✅ ' + pick(['Brilliant!','Great!','Nice!','Super!']);
+    setTimeout(()=>{ if(playing) startNextRound(); }, 350);
+  } else {
+    score = Math.max(0, score-1); scoreEl.textContent = score;
+    statusEl.textContent = pick(['Almost—try again!','So close!','Keep going!']);
+  }
+}
+
+function computeFinalScore(scoreVal, timeRem){
+  return (scoreVal * 1000) + Math.floor(timeRem*5);
+}
+
+function startGame(){
+  ensureAudioContext();
+  stopAllAudio();
+  playing = true; score = 0; scoreEl.textContent = 0;
+  const cfg = LEVELS[selectedLevel];
+  secs = cfg.secs; timerEl.textContent = secs;
+  targetPool = shuffle(ITEMS).slice(0, Math.min(cfg.maxItems, ITEMS.length));
+  statusEl.textContent = 'Game started — listen for the item';
+  if(timer) clearInterval(timer);
+  timer = setInterval(()=>{
+    secs--; timerEl.textContent = secs;
+    if(secs <= 0){
+      clearInterval(timer);
+      playing = false;
+      const final = computeFinalScore(score, secs);
+      const msg = score < 5 ? pick(['You are my buddy ❤️ Let\'s play again, shall we?','Great try!']) : pick(['Wow! You crushed it! 🏆','Amazing score!']);
+      statusEl.textContent = `Time’s up: Final score ${score}. ${msg}`;
+      saveResultToLeaderboard({name:'Anonymous',score, timeRemaining:secs, finalScore:final, level:selectedLevel, when:Date.now()});
+      openResultModal(score, secs, final);
+    }
+  }, 1000);
+  startNextRound();
+}
+
+startBtn.addEventListener('click', ()=>{
+  ensureAudioContext();
+  if(audioCtx && audioCtx.state === 'suspended'){ audioCtx.resume().catch(()=>{}); }
+  startGame();
+});
+
+muteBtn.addEventListener('click', ()=>{
+  soundOn = !soundOn;
+  muteBtn.textContent = soundOn ? '🔊 On' : '🔇 Off';
+  if(!soundOn) stopAllAudio();
+});
+
+levelBtns.forEach(b=>{
+  b.addEventListener('click', ()=>{
+    levelBtns.forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    selectedLevel = Number(b.dataset.level);
+    statusEl.textContent = `Level ${selectedLevel} selected. Press Start.`;
+    buildGrid(ITEMS.slice(0,4));
+  });
+});
+
+function openTraining(){
+  trainingPanel.style.display = 'block';
+  trainingPanel.setAttribute('aria-hidden','false');
+  grid.style.display = 'none';
+  renderTrainingPreview();
+  trainIndex = 0;
+  showTrainingLarge(ITEMS[0]);
+  statusEl.textContent = 'Training mode: previewing items';
+}
+function closeTraining(){
+  trainingPanel.style.display = 'none';
+  trainingPanel.setAttribute('aria-hidden','true');
+  grid.style.display = '';
+  stopTraining();
+  statusEl.textContent = 'Training closed';
+}
+trainToggle.addEventListener('click', ()=>{
+  const open = trainingPanel.style.display === 'block';
+  if(open) closeTraining(); else openTraining();
+});
+
+function renderTrainingPreview(){
+  trainingPreview.innerHTML = '';
+  ITEMS.forEach((k, idx)=>{
+    const d = document.createElement('div'); d.className = 'thumb';
+    const img = document.createElement('img'); img.alt = k; img.src = `images/pujo/${k}.jpg`;
+    img.addEventListener('error', ()=>{ img.style.opacity = 0.4; });
+    d.appendChild(img);
+    d.addEventListener('click', ()=>{ pauseTraining(); trainIndex = idx; showTrainingLarge(k); speakItem(k); });
+    trainingPreview.appendChild(d);
+  });
+}
+
+function showTrainingLarge(key){
+  if(preloadedImages[key] && preloadedImages[key].src) trainingLarge.src = preloadedImages[key].src;
+  else trainingLarge.src = `images/pujo/${key}.jpg`;
+  Array.from(trainingPreview.children).forEach((n,i)=> n.classList.toggle('current', ITEMS[i]===key));
+  const idx = ITEMS.indexOf(key);
+  if(idx >= 0) trainingPreview.children[idx].scrollIntoView({behavior:'smooth', inline:'center'});
+}
+
+async function trainingLoop(){
+  while(trainPlaying){
+    const key = ITEMS[trainIndex];
+    showTrainingLarge(key);
+    await fetchAndMaybeDecode(key).catch(()=>{});
+    await speakItem(key);
+    if(!trainPlaying) break;
+    const delay = Number(trainDelay.value) || 1000;
+    await new Promise(r => trainTimer = setTimeout(r, delay));
+    trainIndex = (trainIndex + 1) % ITEMS.length;
+  }
+}
+function startTraining(){ if(trainPlaying) return; trainPlaying = true; trainPlay.disabled=true; trainPause.disabled=false; trainingLoop(); }
+function pauseTraining(){ trainPlaying = false; trainPlay.disabled=false; trainPause.disabled=true; if(trainTimer){ clearTimeout(trainTimer); trainTimer=null; } stopAllAudio(); }
+function stopTraining(){ pauseTraining(); trainIndex = 0; trainingLarge.src=''; Array.from(trainingPreview.children).forEach(n=> n.classList.remove('current')); }
+
+trainPlay.addEventListener('click', ()=>{ if(trainingPanel.style.display!=='block') openTraining(); startTraining(); });
+trainPause.addEventListener('click', pauseTraining);
+trainNext.addEventListener('click', ()=>{ pauseTraining(); trainIndex=(trainIndex+1)%ITEMS.length; showTrainingLarge(ITEMS[trainIndex]); speakItem(ITEMS[trainIndex]); });
+trainPrev.addEventListener('click', ()=>{ pauseTraining(); trainIndex=(trainIndex-1+ITEMS.length)%ITEMS.length; showTrainingLarge(ITEMS[trainIndex]); speakItem(ITEMS[trainIndex]); });
+trainStop.addEventListener('click', ()=>{ stopTraining(); });
+
+function saveResultToLeaderboard(entry){
+  try{
+    const lb = JSON.parse(localStorage.getItem(LB_KEY) || '[]');
+    lb.push(entry);
+    lb.sort((a,b)=> b.finalScore - a.finalScore || b.score - a.score || a.timeRemaining - b.timeRemaining);
+    localStorage.setItem(LB_KEY, JSON.stringify(lb.slice(0,200)));
+  }catch(e){}
+}
+function loadLeaderboard(){ try{ return JSON.parse(localStorage.getItem(LB_KEY) || '[]'); }catch(e){ return []; } }
+
+function openResultModal(scoreVal,timeRem,finalScoreVal){
+  const badge = finalScoreVal >= 20000 ? 'Gold' : finalScoreVal >= 12000 ? 'Silver' : 'Bronze';
+  const html = `
+    <h2>Round complete</h2>
+    <p>Score: <b>${scoreVal}</b> • Time remaining: <b>${timeRem}</b>s • Final score: <b>${finalScoreVal}</b></p>
+    <p>Badge: <b>${badge}</b></p>
+    <div style="display:flex;gap:8px;align-items:center;margin-top:10px">
+      <input id="playerName" placeholder="Your name (optional)" style="padding:8px;border:1px solid #ddd;border-radius:8px;width:220px" />
+      <button id="saveScoreBtn" class="btn">Save</button>
+      <button id="shareLinkBtn" class="btn">Share</button>
+      <button id="downloadCertBtn" class="btn">Certificate</button>
+      <button id="closeModalBtn" class="btn">Close</button>
+    </div>
+  `;
+  openModal(html);
+  document.getElementById('closeModalBtn').addEventListener('click', closeModal);
+  document.getElementById('saveScoreBtn').addEventListener('click', ()=>{
+    const name = document.getElementById('playerName').value.trim() || 'Anonymous';
+    saveResultToLeaderboard({name,score:scoreVal,timeRemaining:timeRem,finalScore:finalScoreVal,level:selectedLevel,when:Date.now()});
+    alert('Saved to local leaderboard');
+    closeModal();
+  });
+  document.getElementById('shareLinkBtn').addEventListener('click', ()=>{
+    const payload = {name:(document.getElementById('playerName').value.trim()||'Anonymous'),score:scoreVal,timeRemaining:timeRem,finalScore:finalScoreVal,level:selectedLevel,when:Date.now()};
+    const url = generateShareURL(payload);
+    if(navigator.share){ navigator.share({title:'Pujo score',text:`I scored ${payload.score}`,url}).catch(()=>copyToClipboard(url).then(()=>alert('Link copied'))); }
+    else copyToClipboard(url).then(()=>alert('Link copied')).catch(()=>prompt('Copy this link:', url));
+  });
+  document.getElementById('downloadCertBtn').addEventListener('click', ()=>{
+    const name = document.getElementById('playerName').value.trim() || 'Anonymous';
+    generateCertificate(name, selectedLevel, scoreVal, timeRem, finalScoreVal);
+  });
+}
+
+leaderboardBtn.addEventListener('click', ()=>{
+  const lb = loadLeaderboard();
+  const rows = lb.map((r,i)=>`<tr><td>${i+1}</td><td>${escapeHtml(r.name)}</td><td>${r.score}</td><td>${r.timeRemaining}s</td><td>${r.finalScore}</td><td>${r.level}</td><td>${new Date(r.when).toLocaleString()}</td></tr>`).join('') || '<tr><td colspan="7">No entries</td></tr>';
+  const html = `<h2>Local Leaderboard</h2><div style="overflow:auto"><table style="width:100%;border-collapse:collapse"><thead><tr><th>#</th><th>Name</th><th>Score</th><th>Time</th><th>Final</th><th>Level</th><th>When</th></tr></thead><tbody>${rows}</tbody></table></div><div style="margin-top:10px;display:flex;gap:8px"><button id="exportBtn" class="btn">Export JSON</button><button id="closeLB" class="btn">Close</button></div>`;
+  openModal(html);
+  document.getElementById('closeLB').addEventListener('click', closeModal);
+  document.getElementById('exportBtn').addEventListener('click', ()=>{ const data = JSON.stringify(lb, null, 2); downloadText('pujo_leaderboard.json', data); });
+});
+
+shareBtn.addEventListener('click', ()=>{
+  const lb = loadLeaderboard();
+  const last = lb[0];
+  if(!last){ copyToClipboard(location.href).then(()=>alert('Game link copied')); return; }
+  const url = generateShareURL(last);
+  copyToClipboard(url).then(()=>alert('Share link copied!'));
+});
+
+certBtn.addEventListener('click', ()=>{
+  const lb = loadLeaderboard();
+  if(!lb[0]){ alert('No saved result yet'); return; }
+  const r = lb[0];
+  generateCertificate(r.name || 'Player', r.level, r.score, r.timeRemaining, r.finalScore);
+});
+
+function generateShareURL(payload){
+  try{ const s = btoa(unescape(encodeURIComponent(JSON.stringify(payload)))); return location.origin + location.pathname + '?r=' + s; }catch(e){ return location.href; }
+}
+function tryReadShared(){ try{ const params = new URLSearchParams(location.search); const r = params.get('r'); if(!r) return null; return JSON.parse(decodeURIComponent(escape(atob(r)))); }catch(e){ return null; } }
+
+function openModal(html){ modalContent.innerHTML = html; modal.style.display = 'flex'; modal.setAttribute('aria-hidden','false'); }
+function closeModal(){ modal.style.display = 'none'; modal.setAttribute('aria-hidden','true'); modalContent.innerHTML = ''; }
+modal.addEventListener('click', (e)=>{ if(e.target === modal) closeModal(); });
+
+function downloadText(filename, text){ const blob = new Blob([text], {type:'application/json'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url); }
+function copyToClipboard(txt){ if(navigator.clipboard) return navigator.clipboard.writeText(txt); return Promise.reject(); }
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function generateCertificate(name, level, scoreVal, timeRem, finalScoreVal){
+  const canvas = certCanvas; const w = 1200, h = 675; canvas.width = w; canvas.height = h; const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#fff7f0'; ctx.fillRect(0,0,w,h);
+  ctx.fillStyle = '#111'; ctx.font = 'bold 48px sans-serif'; ctx.textAlign='center';
+  ctx.fillText('Pujo — Tap & Play', w/2, 100);
+  ctx.font = '20px sans-serif'; ctx.fillText('Presented by Created and Designed by Animesh', w/2, 140);
+  ctx.font = 'bold 56px sans-serif'; ctx.fillText(name, w/2, 260);
+  ctx.font = '28px sans-serif'; ctx.fillStyle = '#333'; ctx.fillText(`Level ${level} • Score ${scoreVal} • Time left ${timeRem}s`, w/2, 330);
+  ctx.fillText(`Final score: ${finalScoreVal}`, w/2, 370);
+  canvas.toBlob(blob=>{ const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `pujo_certificate_${(name||'player').replace(/\s+/g,'_')}.png`; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url); }, 'image/png');
+}
+
+(function init(){
+  buildGrid(ITEMS.slice(0,4)); // show 4 items initially so grid is visible and footer remains in view
+  statusEl.textContent = 'Ready — press Start to enable audio.';
+  backgroundPreload().catch(()=>{});
+  const shared = tryReadShared();
+  if(shared){
+    setTimeout(()=>{ if(confirm(`Challenge from ${shared.name}: Score ${shared.score} — open challenge?`)){ openModal(`<h3>Challenge</h3><p>${escapeHtml(shared.name)} scored ${shared.score} (final ${shared.finalScore})</p><div style="margin-top:10px"><button id="acceptChallenge" class="btn">Accept</button><button id="closeCh" class="btn">Close</button></div>`); document.getElementById('acceptChallenge').addEventListener('click', ()=>{ closeModal(); }); document.getElementById('closeCh').addEventListener('click', closeModal); } }, 600);
+  }
+})();
+
+function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
 </script>
 </body>
 </html>
