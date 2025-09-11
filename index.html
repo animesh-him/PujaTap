@@ -146,7 +146,7 @@
       </div>
 
       <div class="creditSmall" role="contentinfo">
-        <span class="tagline">Created by Bengali — For all the Bengalis around the globe.</span>
+        <span class="tagline">Created for all Bengalis around the Globe.</span>
         <span class="main">Created and Designed by Animesh — Audio Credits: My daughter Ishani</span>
       </div>
     </div>
@@ -617,9 +617,9 @@ function generateCertificate(name, level, scoreVal, timeRem, finalScoreVal){
   const canvas = certCanvas; const w = 1200, h = 675; canvas.width = w; canvas.height = h; const ctx = canvas.getContext('2d');
   ctx.fillStyle = '#fff7f0'; ctx.fillRect(0,0,w,h);
   ctx.fillStyle = '#111'; ctx.font = 'bold 48px sans-serif'; ctx.textAlign='center';
-  ctx.fillText('Pujo — Tap & Play', w/2, 100);
-  ctx.font = '20px sans-serif'; ctx.fillText('Created by Bengali — For all the Bengalis around the globe.', w/2, 140);
-  ctx.font = '20px sans-serif'; ctx.fillText('Created and Designed by Animesh — Audio Credits: Ishani', w/2, 170);
+  ctx.fillText('GAMING CERTIFICATE', w/2, 100);
+  ctx.font = '20px sans-serif'; ctx.fillText('Game- Pujo — Tap & Play (PujaTap)', w/2, 140);
+  ctx.font = '20px sans-serif'; ctx.fillText('Presented by Game Creator & Designer Animesh', w/2, 170);
   ctx.font = 'bold 56px sans-serif'; ctx.fillText(name, w/2, 260);
   ctx.font = '28px sans-serif'; ctx.fillStyle = '#333'; ctx.fillText(`Level ${level} • Score ${scoreVal} • Time left ${timeRem}s`, w/2, 330);
   ctx.fillText(`Final score: ${finalScoreVal}`, w/2, 370);
