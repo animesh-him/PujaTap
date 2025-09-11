@@ -8,8 +8,8 @@
   :root{--accent:#0f172a;--muted:#666;--bg:#fff7f0}
   *{box-sizing:border-box}
   html,body{height:100%;margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial;background:var(--bg);color:#111}
-  /* Make wrapper exactly viewport height so footer + status remain visible */
-  .wrap{max-width:1100px;margin:0 auto;padding:10px;display:flex;flex-direction:column;height:100vh}
+  /* Outer container uses full viewport and is column flex */
+  .wrap{max-width:1100px;margin:0 auto;padding:10px;display:flex;flex-direction:column;min-height:100vh}
   header{display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap}
   .title{font-weight:900;font-size:18px}
   .subtitle{font-size:13px;color:var(--muted)}
@@ -21,39 +21,42 @@
   .level-btn{padding:6px 10px;border-radius:999px;border:1px solid #cbd5e1;background:#fff;cursor:pointer;font-weight:800;color:#111;font-size:13px}
   .level-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
   .small{font-size:12px;color:var(--muted)}
-  main{flex:1; display:flex; flex-direction:column; min-height:0} /* important: allow children to shrink */
-  /* Make the central area scrollable while header/status/footer remain visible */
-  .grid-wrap{flex:1; overflow:auto;padding-top:10px;padding-bottom:10px;min-height:0}
+  main{flex:1; display:flex; flex-direction:column; min-height:0} /* allow internal scrolling */
+  /* central scroll area (grid or training) */
+  .contentArea{flex:1; min-height:0; overflow:auto; padding-bottom:84px; /* room for bottom bar */ }
   .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:0 auto;max-width:1100px;padding:4px}
   @media(min-width:640px){ .grid{grid-template-columns:repeat(3,1fr)} }
   @media(min-width:900px){ .grid{grid-template-columns:repeat(4,1fr)} }
   .card{border-radius:10px;overflow:hidden;border:1px solid #eee;background:#fff;display:flex;flex-direction:column;cursor:pointer;height:140px}
-  @media(min-width:640px){ .card{height:165px} }
-  @media(min-width:900px){ .card{height:190px} }
-  .imgwrap{height:calc(100% - 34px);overflow:hidden;display:flex;align-items:center;justify-content:center;background:#fff}
-  /* Use contain so tall images are fully visible rather than cropped */
+  @media(min-width:640px){ .card{height:160px} }
+  @media(min-width:900px){ .card{height:185px} }
+  .imgwrap{height:calc(100% - 34px);overflow:hidden;display:flex;align-items:center;justify-content:center;background:#fff;padding:6px}
+  /* Use contain so tall images are fully visible rather than being cropped */
   .imgwrap img{width:100%;height:100%;object-fit:contain;object-position:center}
   .label{height:34px;line-height:18px;padding:6px 8px;text-align:center;font-weight:800;font-size:13px;background:linear-gradient(180deg,transparent,rgba(255,255,255,0.9));white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .training-panel{display:none;margin-top:10px;padding:10px;border-radius:10px;background:#fff;border:1px solid #eee}
-  /* training large reduced max-height to keep footer visible */
+  .training-panel{display:none;margin:10px;border-radius:10px;background:#fff;border:1px solid #eee;padding:10px}
   .training-large{display:flex;align-items:center;justify-content:center;margin-bottom:8px}
-  .training-large img{width:100%;max-width:720px;max-height:44vh;object-fit:contain;border-radius:8px}
+  .training-large img{width:100%;max-width:720px;max-height:50vh;object-fit:contain;border-radius:8px;background:#fff}
   .training-thumb-row{display:flex;gap:8px;overflow:auto;padding:6px 0}
   .thumb{flex:0 0 auto;width:78px;text-align:center}
   .thumb img{width:78px;height:60px;object-fit:cover;border-radius:6px;border:2px solid transparent}
   .thumb.current img{border-color:var(--accent)}
   .status-small{margin-top:10px;color:var(--muted);font-size:12px}
-  /* footer is visible (small font and dark background as requested) */
-  .footer{margin-top:8px;display:flex;justify-content:space-between;align-items:center;gap:8px}
-  .footer .credit{font-size:11px;color:#fff;background:#000;padding:6px 8px;border-radius:3px;text-align:center;width:100%}
+  /* bottom fixed bar (status + credit) */
+  .bottomBar{position:fixed;left:0;right:0;bottom:0;height:68px;display:flex;align-items:center;justify-content:center;padding:6px 12px;z-index:1500}
+  .bottomInner{max-width:1100px;width:100%;display:flex;justify-content:space-between;gap:8px;align-items:center}
+  .bottomStatus, .bottomCredit{background:#000;color:#fff;padding:6px 10px;border-radius:6px;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .bottomStatus{flex:1 1 auto}
+  .bottomCredit{flex:0 0 auto; margin-left:8px; font-size:11px; padding:6px 8px}
   .modal-back{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:none;align-items:center;justify-content:center;z-index:1200;padding:12px}
   .modal{background:#fff;padding:14px;border-radius:10px;max-width:920px;width:100%;max-height:86vh;overflow:auto;font-size:13px}
   input[type="text"]{padding:8px;border-radius:8px;border:1px solid #ddd;font-size:13px}
   @media(max-width:640px){
-    .card{height:140px}
+    .card{height:130px}
     .btn{font-size:12px;padding:6px 8px}
     .label{font-size:12px}
-    .footer .credit{font-size:11px;padding:6px}
+    .bottomBar{height:76px}
+    .bottomCredit{font-size:11px}
   }
 </style>
 </head>
@@ -92,7 +95,7 @@
   </div>
 
   <main>
-    <div class="grid-wrap">
+    <div class="contentArea" id="contentArea">
       <div id="grid" class="grid" aria-live="polite" aria-label="Game grid"></div>
 
       <section id="trainingPanel" class="training-panel" aria-hidden="true">
@@ -121,11 +124,13 @@
     <div id="status" class="status-small" aria-live="polite">Ready — press Start to enable audio.</div>
   </main>
 
-  <footer class="sitefoot">
-    <div class="footer">
-      <div class="credit">Created and Designed by Animesh, Audio Credits — My Daughter Ishani</div>
+  <!-- Bottom fixed bar -->
+  <div class="bottomBar" role="status" aria-hidden="false">
+    <div class="bottomInner">
+      <div id="bottomStatus" class="bottomStatus">Status: Ready — press Start to begin.</div>
+      <div class="bottomCredit">Created and Designed by Animesh, Audio: Ishani</div>
     </div>
-  </footer>
+  </div>
 </div>
 
 <div id="modal" class="modal-back" role="dialog" aria-hidden="true">
@@ -135,9 +140,7 @@
 <canvas id="certCanvas" style="display:none"></canvas>
 
 <script>
-/* =========================
-   Data and config (unchanged)
-   ========================= */
+/* ====== Data & config (same as before) ====== */
 const ITEMS = [
   'prodip','kashphool','dhak','kansorghonta','shankho','kolabou','dhunuchi','pushpo','fol',
   'mishti','peda','batasha','alpona','chandmala','saree','punjabi','alta','trishul','bhog',
@@ -149,9 +152,7 @@ const ITEMS = [
 const LEVELS = {1:{secs:60,maxItems:15},2:{secs:120,maxItems:30},3:{secs:180,maxItems:ITEMS.length}};
 const LB_KEY = 'pujo_leaderboard_v1';
 
-/* =========================
-   UI refs & state
-   ========================= */
+/* ====== UI refs & state ====== */
 const grid = document.getElementById('grid');
 const startBtn = document.getElementById('startBtn');
 const muteBtn = document.getElementById('muteBtn');
@@ -165,7 +166,9 @@ const trainPrev = document.getElementById('trainPrev');
 const trainNext = document.getElementById('trainNext');
 const trainStop = document.getElementById('trainStop');
 const trainDelay = document.getElementById('trainDelay');
+const contentArea = document.getElementById('contentArea');
 const statusEl = document.getElementById('status');
+const bottomStatus = document.getElementById('bottomStatus');
 const scoreEl = document.getElementById('score');
 const timerEl = document.getElementById('timer');
 const leaderboardBtn = document.getElementById('leaderboardBtn');
@@ -201,7 +204,7 @@ function shuffle(a){ return a.slice().map(v=>[Math.random(),v]).sort((a,b)=>a[0]
 function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
-/* Audio helpers */
+/* ===== Audio helpers (unchanged behavior) ===== */
 function ensureAudioContext(){
   if(audioCtx) return audioCtx;
   try{
@@ -210,9 +213,7 @@ function ensureAudioContext(){
     audioCtx = new AC();
     if(audioCtx.state === 'suspended'){ audioCtx.resume().catch(()=>{}); }
     return audioCtx;
-  }catch(e){
-    audioCtx = null; return null;
-  }
+  }catch(e){ audioCtx = null; return null; }
 }
 function stopAllAudio(){
   try{ if(activeSource && activeSource.stop){ try{ activeSource.stop(0); }catch(e){} activeSource = null; } }catch(e){}
@@ -278,40 +279,16 @@ async function speakItem(key){
   }
 }
 
-/* Image preload & availability */
+/* Image and preload helpers */
 const PLACEHOLDER_SVG = 'data:image/svg+xml;utf8,' + encodeURIComponent(
   '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600"><rect fill="#f3f3f3" width="100%" height="100%"/><text x="50%" y="50%" font-size="28" fill="#777" text-anchor="middle" dy="8">Image not found</text></svg>'
 );
 function capabilityCheck(){ const mem = navigator.deviceMemory || 0; const cores = navigator.hardwareConcurrency || 0; return (mem>=4||cores>=4); }
 function preloadImages(keys){ keys.forEach(k=>{ if(preloadedImages[k]) return; const img=new Image(); img.src=`images/pujo/${k}.jpg`; preloadedImages[k]=img; }); }
-async function backgroundPreload(){
-  aggressiveAllowed = capabilityCheck();
-  const first = ITEMS.slice(0,6);
-  preloadImages(first);
-  await Promise.all(first.map(k=>fetchAndMaybeDecode(k))).catch(()=>{});
-  if(aggressiveAllowed){
-    for(let i=0;i<ITEMS.length;i+=6){
-      const set = ITEMS.slice(i,i+6); preloadImages(set); await Promise.all(set.map(k=>fetchAndMaybeDecode(k))).catch(()=>{}); await new Promise(r=>setTimeout(r,180));
-    }
-  } else {
-    for(let i=0;i<ITEMS.length;i+=4){
-      const set = ITEMS.slice(i,i+4); preloadImages(set); await Promise.all(set.map(k=>fetchAndMaybeDecode(k))).catch(()=>{}); await new Promise(r=>setTimeout(r,600));
-    }
-  }
-}
-function ensureImageAvailable(key, timeoutMs = 1200) {
-  return new Promise((resolve) => {
-    const url = `images/pujo/${key}.jpg`;
-    const img = new Image();
-    let done = false;
-    const to = setTimeout(()=>{ if(!done){ done = true; img.onload = img.onerror = null; resolve(false); } }, timeoutMs);
-    img.onload = () => { if(done) return; done = true; clearTimeout(to); resolve(true); };
-    img.onerror = () => { if(done) return; done = true; clearTimeout(to); resolve(false); };
-    img.src = url;
-  });
-}
+async function backgroundPreload(){ aggressiveAllowed = capabilityCheck(); const first = ITEMS.slice(0,6); preloadImages(first); await Promise.all(first.map(k=>fetchAndMaybeDecode(k))).catch(()=>{}); if(aggressiveAllowed){ for(let i=0;i<ITEMS.length;i+=6){ const set=ITEMS.slice(i,i+6); preloadImages(set); await Promise.all(set.map(k=>fetchAndMaybeDecode(k))).catch(()=>{}); await new Promise(r=>setTimeout(r,180)); } } else { for(let i=0;i<ITEMS.length;i+=4){ const set=ITEMS.slice(i,i+4); preloadImages(set); await Promise.all(set.map(k=>fetchAndMaybeDecode(k))).catch(()=>{}); await new Promise(r=>setTimeout(r,600)); } } }
+function ensureImageAvailable(key, timeoutMs = 1200) { return new Promise((resolve) => { const url = `images/pujo/${key}.jpg`; const img = new Image(); let done = false; const to = setTimeout(()=>{ if(!done){ done = true; img.onload = img.onerror = null; resolve(false); } }, timeoutMs); img.onload = () => { if(done) return; done = true; clearTimeout(to); resolve(true); }; img.onerror = () => { if(done) return; done = true; clearTimeout(to); resolve(false); }; img.src = url; }); }
 
-/* Grid & gameplay */
+/* Grid & gameplay (adjusted to 4 items per round so fits well) */
 function buildGrid(keys){
   grid.innerHTML = '';
   const hideLabels = selectedLevel === 3;
@@ -357,6 +334,7 @@ async function startNextRound(){
     buildGrid(keys);
     currentTarget = keys[0];
     statusEl.textContent = 'Listen and tap the matching image (some images unavailable)';
+    bottomStatus.textContent = statusEl.textContent;
     await speakItem(currentTarget);
     return;
   }
@@ -375,6 +353,7 @@ async function startNextRound(){
   const keys = shuffle([currentTarget, ...distractors]).slice(0,4);
   buildGrid(keys);
   statusEl.textContent = 'Listen and tap the matching image';
+  bottomStatus.textContent = statusEl.textContent;
   await speakItem(currentTarget);
 }
 
@@ -390,15 +369,17 @@ function onTileClick(key){
   if(key === currentTarget){
     score++; scoreEl.textContent = score;
     statusEl.textContent = '✅ ' + pick(['Brilliant!','Great!','Nice!','Super!']);
+    bottomStatus.textContent = statusEl.textContent;
     setTimeout(()=>{ if(playing) startNextRound(); }, 350);
   } else {
     score = Math.max(0, score-1); scoreEl.textContent = score;
     statusEl.textContent = pick(['Almost—try again!','So close!','Keep going!']);
+    bottomStatus.textContent = statusEl.textContent;
   }
 }
 function computeFinalScore(scoreVal, timeRem){ return (scoreVal * 1000) + Math.floor(Math.max(0,timeRem) * 5); }
 
-/* Start/Stop/levels behavior */
+/* Start/Stop/levels */
 function startGame(){
   ensureAudioContext();
   stopAllAudio();
@@ -407,6 +388,7 @@ function startGame(){
   secs = cfg.secs; timerEl.textContent = secs;
   targetPool = shuffle(ITEMS).slice(0, Math.min(cfg.maxItems, ITEMS.length));
   statusEl.textContent = 'Game started — listen for the item';
+  bottomStatus.textContent = statusEl.textContent;
   if(timer) clearInterval(timer);
   timer = setInterval(()=>{
     secs--; timerEl.textContent = secs;
@@ -416,7 +398,8 @@ function startGame(){
       startBtn.textContent = 'Start'; startBtn.classList.remove('primary'); startBtn.setAttribute('aria-pressed','false');
       const final = computeFinalScore(score, secs);
       const msg = score < 5 ? pick(['You are my buddy ❤️ Let\'s play again, shall we?','Great try!']) : pick(['Wow! You crushed it! 🏆','Amazing score!']);
-      statusEl.textContent = `Time’s up: Your score is ${score}. ${msg}`;
+      statusEl.textContent = `Game finished. Your score is ${score}. ${msg}`;
+      bottomStatus.textContent = statusEl.textContent;
       saveResultToLeaderboard({name:'Anonymous',score, timeRemaining:secs, finalScore:final, level:selectedLevel, when:Date.now()});
       openResultModal(score, secs, final);
     }
@@ -430,9 +413,10 @@ function stopGame(){
   stopAllAudio();
   startBtn.textContent = 'Start'; startBtn.classList.remove('primary'); startBtn.setAttribute('aria-pressed','false');
   statusEl.textContent = 'Stopped. Press Start to play again.';
+  bottomStatus.textContent = statusEl.textContent;
 }
 startBtn.addEventListener('click', ()=>{
-  if(trainingPanel.style.display === 'block'){ return; }
+  if(trainingPanel.style.display === 'block'){ return; } // disable start while in training
   if(!playing) startGame(); else stopGame();
 });
 muteBtn.addEventListener('click', ()=>{ soundOn = !soundOn; muteBtn.textContent = soundOn ? '🔊 On' : '🔇 Off'; if(!soundOn) stopAllAudio(); });
@@ -443,6 +427,7 @@ levelBtns.forEach(b=>{
     b.classList.add('active');
     selectedLevel = Number(b.dataset.level);
     statusEl.textContent = `Level ${selectedLevel} selected. Press Start.`;
+    bottomStatus.textContent = statusEl.textContent;
     buildGrid(ITEMS.slice(0,4));
   });
 });
@@ -451,7 +436,10 @@ levelBtns.forEach(b=>{
 function openTraining(){
   trainingPanel.style.display = 'block';
   trainingPanel.setAttribute('aria-hidden','false');
-  document.querySelector('.grid-wrap').style.display = 'none';
+  document.querySelector('.contentArea').scrollTop = 0;
+  document.querySelector('.grid') && (document.querySelector('.grid').style.display = 'none');
+  grid.style.display = 'none';
+  trainingPreview.innerHTML = '';
   levelsWrapper.style.display = 'none';
   leaderboardBtn.style.display = 'none';
   shareBtn.style.display = 'none';
@@ -463,11 +451,13 @@ function openTraining(){
   trainIndex = 0;
   showTrainingLarge(ITEMS[0]);
   statusEl.textContent = 'Training mode: previewing items';
+  bottomStatus.textContent = statusEl.textContent;
 }
 function closeTraining(){
   trainingPanel.style.display = 'none';
   trainingPanel.setAttribute('aria-hidden','true');
-  document.querySelector('.grid-wrap').style.display = '';
+  document.querySelector('.grid') && (document.querySelector('.grid').style.display = '');
+  grid.style.display = '';
   levelsWrapper.style.display = '';
   leaderboardBtn.style.display = '';
   shareBtn.style.display = '';
@@ -477,6 +467,7 @@ function closeTraining(){
   startBtn.disabled = false;
   stopTraining();
   statusEl.textContent = 'Training closed';
+  bottomStatus.textContent = statusEl.textContent;
 }
 trainToggle.addEventListener('click', ()=>{ const open = trainingPanel.style.display === 'block'; if(open) closeTraining(); else openTraining(); });
 
@@ -523,7 +514,7 @@ trainStop.addEventListener('click', ()=>{ stopTraining(); });
 
 returnToPlay.addEventListener('click', ()=>{ closeTraining(); });
 
-/* Leaderboard / share / cert (same as before) */
+/* Leaderboard/Share/Cert (same as before) */
 function saveResultToLeaderboard(entry){
   try{
     const lb = JSON.parse(localStorage.getItem(LB_KEY) || '[]');
@@ -604,7 +595,7 @@ modal.addEventListener('click', (e)=>{ if(e.target === modal) closeModal(); });
 function downloadText(filename, text){ const blob = new Blob([text], {type:'application/json'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url); }
 function copyToClipboard(txt){ if(navigator.clipboard) return navigator.clipboard.writeText(txt); return Promise.reject(); }
 
-/* Certificate generation (canvas) */
+/* Certificate generation */
 function generateCertificate(name, level, scoreVal, timeRem, finalScoreVal){
   const canvas = certCanvas; const w = 1200, h = 675; canvas.width = w; canvas.height = h; const ctx = canvas.getContext('2d');
   ctx.fillStyle = '#fff7f0'; ctx.fillRect(0,0,w,h);
@@ -621,6 +612,7 @@ function generateCertificate(name, level, scoreVal, timeRem, finalScoreVal){
 (function init(){
   buildGrid(ITEMS.slice(0,4));
   statusEl.textContent = 'Ready — press Start to enable audio.';
+  bottomStatus.textContent = statusEl.textContent;
   backgroundPreload().catch(()=>{});
   const shared = tryReadShared();
   if(shared){
