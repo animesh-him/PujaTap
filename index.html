@@ -85,7 +85,7 @@
   input[type="text"]{padding:8px;border-radius:8px;border:1px solid #ddd;font-size:13px}
 
   @media(max-width:480px){
-    :root{--header-h:104px; --credit-h:64px}
+    :root{--header-h:104px; --credit_h:64px}
     .card{height:112px}
     .training-large img{max-height:calc(100vh - var(--header-h) - 170px)}
   }
@@ -157,7 +157,7 @@
       </div>
 
       <div class="creditSmall" role="contentinfo">
-        <span class="tagline">Created by Bengalis — For all the Bengalis around the globe.</span>
+        <span class="tagline">Created by Bengali — For all the Bengalis around the globe.</span>
         <span class="main">Created and Designed by Animesh — Audio Credits: My daughter Ishani</span>
       </div>
     </div>
@@ -392,24 +392,49 @@ async function startNextRound(){
 }
 
 /* ===== Click handling ===== */
+
+/* helper to replay the current target (used after wrong answer) */
+let _replayTimer = null;
+function replayCurrentTarget(delay = 600){
+  if(_replayTimer) { clearTimeout(_replayTimer); _replayTimer = null; }
+  _replayTimer = setTimeout(()=>{
+    if(currentTarget && !trainPlaying && playing){
+      speakItem(currentTarget).catch(()=>{});
+    }
+  }, delay);
+}
+
+/* UPDATED onTileClick: stops audio promptly and forces next round flow reliably */
 function onTileClick(key){
+  // if in training panel and not playing, tapping a thumb previews
   if(!playing && trainingPanel.style.display === 'block'){
     pauseTraining();
     showTrainingLarge(key);
-    speakItem(key);
+    speakItem(key).catch(()=>{});
     return;
   }
   if(!playing) return;
   if(!currentTarget) return;
+
+  // stop current audio immediately so nothing blocks progression
+  stopAllAudio();
+
   if(key === currentTarget){
     score++; scoreEl.textContent = score;
     updateStatus('✅ ' + pick(['Brilliant!','Great!','Nice!','Super!']));
+    // ensure any pending replay timers cleared
+    if(_replayTimer){ clearTimeout(_replayTimer); _replayTimer = null; }
+    // schedule next round after small feedback pause
     setTimeout(()=>{ if(playing) startNextRound(); }, 350);
   } else {
+    // wrong: gentle penalty and replay the same prompt after a brief pause
     score = Math.max(0, score-1); scoreEl.textContent = score;
     updateStatus(pick(['Almost—try again!','So close!','Keep going!']));
+    // play a "try again" short pause then replay current target
+    replayCurrentTarget(700);
   }
 }
+
 function computeFinalScore(scoreVal, timeRem){ return (scoreVal * 1000) + Math.floor(Math.max(0,timeRem) * 5); }
 function updateStatus(txt){ statusEl.textContent = txt; }
 
@@ -430,7 +455,7 @@ function startGame(){
       playing = false;
       startBtn.textContent = 'Start'; startBtn.classList.remove('primary'); startBtn.setAttribute('aria-pressed','false');
       const final = computeFinalScore(score, secs);
-      const msg = score < 5 ? pick(['You are my buddy ❤️ Let\'s play again, shall we?','Great try!']) : pick(['Wow! You crushed it! 🏆','Amazing score!']);
+      const msg = score < 5 ? pick(['You are my buddy ❤️ Let\\'s play again, shall we?','Great try!']) : pick(['Wow! You crushed it! 🏆','Amazing score!']);
       updateStatus(`Game finished. Your score is ${score}. ${msg}`);
       saveResultToLeaderboard({name:'Anonymous',score, timeRemaining:secs, finalScore:final, level:selectedLevel, when:Date.now()});
       openResultModal(score, secs, final);
@@ -638,6 +663,7 @@ function generateCertificate(name, level, scoreVal, timeRem, finalScoreVal){
     setTimeout(()=>{ if(confirm(`Challenge from ${shared.name}: Score ${shared.score} — open challenge?`)){ openModal(`<h3>Challenge</h3><p>${escapeHtml(shared.name)} scored ${shared.score} (final ${shared.finalScore})</p><div style="margin-top:10px"><button id="acceptChallenge" class="btn">Accept</button><button id="closeCh" class="btn">Close</button></div>`); document.getElementById('acceptChallenge').addEventListener('click', ()=>{ closeModal(); }); document.getElementById('closeCh').addEventListener('click', closeModal); } }, 600);
   }
 })();
+function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 </script>
 </body>
 </html>
