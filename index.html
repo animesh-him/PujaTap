@@ -13,7 +13,6 @@
   *{box-sizing:border-box}
   html,body{height:100%;margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial;background:var(--bg);color:#111}
   .wrap{max-width:1100px;margin:0 auto;padding:8px}
-  /* header: sticky so always visible */
   header{
     position:sticky; top:0; z-index:1200;
     background:var(--bg);
@@ -31,20 +30,16 @@
   .level-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
   .small{font-size:12px;color:var(--muted)}
   main{min-height:0}
-  /* content area: reserve exact space so header + content + credit fit on screen */
   .contentArea{
     overflow:auto;
     padding:8px;
-    /* ensure visible area accounts for header + credit on small screens */
     min-height: calc(100vh - var(--header-h) - var(--credit-h));
   }
 
-  /* grid (play mode) */
   .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:0 auto;max-width:1100px;padding:4px}
   @media(min-width:640px){ .grid{grid-template-columns:repeat(3,1fr)} }
   @media(min-width:900px){ .grid{grid-template-columns:repeat(4,1fr)} }
 
-  /* card sizes tuned to fit header->content->credit */
   .card{border-radius:10px;overflow:hidden;border:1px solid #eee;background:#fff;display:flex;flex-direction:column;cursor:pointer;height:120px}
   @media(min-width:640px){ .card{height:136px} }
   @media(min-width:900px){ .card{height:156px} }
@@ -53,14 +48,11 @@
   .imgwrap img{width:100%;height:100%;object-fit:contain;object-position:center} /* contain ensures whole image visible */
   .label{height:30px;line-height:18px;padding:6px 8px;text-align:center;font-weight:800;font-size:12px;background:linear-gradient(180deg,transparent,rgba(255,255,255,0.9));white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-  /* training panel */
   .training-panel{display:none;margin:10px 0;border-radius:10px;background:#fff;border:1px solid #eee;padding:8px}
   .training-large{display:flex;align-items:center;justify-content:center;margin-bottom:8px}
-  /* make large training image fit inside available viewport region so nothing gets pushed */
   .training-large img{
     width:100%;
     max-width:820px;
-    /* critical: compute safe max-height so header + controls + training + thumbs + running + credit fit */
     max-height: calc(100vh - var(--header-h) - 180px);
     object-fit:contain;border-radius:8px;background:#fff;
   }
@@ -70,22 +62,19 @@
   .thumb img{width:76px;height:58px;object-fit:cover;border-radius:6px;border:2px solid transparent}
   .thumb.current img{border-color:var(--accent)}
 
-  /* running status line */
   .runningStatusWrap{margin-top:10px;display:flex;gap:8px;align-items:center;font-size:13px;color:var(--muted)}
   .runningLabel{font-weight:700;color:#222;margin-right:6px}
 
-  /* credit: small black bar, small font; not fixed to avoid covering content */
   .creditSmall{margin-top:8px;font-size:12px;color:#fff;background:#000;padding:8px;text-align:center;border-radius:6px;line-height:1.2}
   .creditSmall .tagline{display:block;font-size:11px;opacity:0.95;margin-bottom:4px}
   .creditSmall .main{font-weight:700}
 
-  /* modal */
   .modal-back{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:none;align-items:center;justify-content:center;z-index:1600;padding:12px}
   .modal{background:#fff;padding:14px;border-radius:10px;max-width:920px;width:100%;max-height:86vh;overflow:auto;font-size:13px}
   input[type="text"]{padding:8px;border-radius:8px;border:1px solid #ddd;font-size:13px}
 
   @media(max-width:480px){
-    :root{--header-h:104px; --credit_h:64px}
+    :root{--header-h:104px; --credit-h:64px}
     .card{height:112px}
     .training-large img{max-height:calc(100vh - var(--header-h) - 170px)}
   }
@@ -233,6 +222,7 @@ let trainPlaying = false;
 let trainTimer = null;
 let soundOn = true;
 let activeSource = null;
+let clickLocked = false;
 
 /* =========================
    AUDIO / IMAGE HELPERS
@@ -319,17 +309,18 @@ async function backgroundPreload(){ aggressiveAllowed = capabilityCheck(); const
 /* helper: check quick availability of image (avoid blank tiles) */
 function ensureImageAvailable(key, timeoutMs = 1000) { return new Promise((resolve) => { const url = `images/pujo/${key}.jpg`; const img = new Image(); let done = false; const to = setTimeout(()=>{ if(!done){ done = true; img.onload = img.onerror = null; resolve(false); } }, timeoutMs); img.onload = () => { if(done) return; done = true; clearTimeout(to); resolve(true); }; img.onerror = () => { if(done) return; done = true; clearTimeout(to); resolve(false); }; img.src = url; }); }
 
-/* ===== Grid & Rounds ===== */
 const PLACEHOLDER_SVG = 'data:image/svg+xml;utf8,' + encodeURIComponent(
   '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600"><rect fill="#f3f3f3" width="100%" height="100%"/><text x="50%" y="50%" font-size="28" fill="#777" text-anchor="middle" dy="8">Image not found</text></svg>'
 );
 
+/* ===== Grid & Rounds ===== */
 function buildGrid(keys){
   grid.innerHTML = '';
   const hideLabels = selectedLevel === 3;
   preloadImages(keys);
   keys.forEach((k,i)=>{
     const c = document.createElement('button'); c.className = 'card'; c.type='button'; c.dataset.key = k;
+    c.setAttribute('aria-label', k);
     const iw = document.createElement('div'); iw.className = 'imgwrap';
     const img = document.createElement('img'); img.alt = k;
     if(preloadedImages[k] && preloadedImages[k].src) img.src = preloadedImages[k].src;
@@ -392,21 +383,11 @@ async function startNextRound(){
 }
 
 /* ===== Click handling ===== */
-
-/* helper to replay the current target (used after wrong answer) */
-let _replayTimer = null;
-function replayCurrentTarget(delay = 600){
-  if(_replayTimer) { clearTimeout(_replayTimer); _replayTimer = null; }
-  _replayTimer = setTimeout(()=>{
-    if(currentTarget && !trainPlaying && playing){
-      speakItem(currentTarget).catch(()=>{});
-    }
-  }, delay);
-}
-
-/* UPDATED onTileClick: stops audio promptly and forces next round flow reliably */
 function onTileClick(key){
-  // if in training panel and not playing, tapping a thumb previews
+  if(clickLocked) return;
+  clickLocked = true;
+  setTimeout(()=>{ clickLocked = false; }, 700); // short lock to prevent spamming
+
   if(!playing && trainingPanel.style.display === 'block'){
     pauseTraining();
     showTrainingLarge(key);
@@ -416,25 +397,16 @@ function onTileClick(key){
   if(!playing) return;
   if(!currentTarget) return;
 
-  // stop current audio immediately so nothing blocks progression
-  stopAllAudio();
-
   if(key === currentTarget){
     score++; scoreEl.textContent = score;
     updateStatus('✅ ' + pick(['Brilliant!','Great!','Nice!','Super!']));
-    // ensure any pending replay timers cleared
-    if(_replayTimer){ clearTimeout(_replayTimer); _replayTimer = null; }
-    // schedule next round after small feedback pause
-    setTimeout(()=>{ if(playing) startNextRound(); }, 350);
   } else {
-    // wrong: gentle penalty and replay the same prompt after a brief pause
     score = Math.max(0, score-1); scoreEl.textContent = score;
     updateStatus(pick(['Almost—try again!','So close!','Keep going!']));
-    // play a "try again" short pause then replay current target
-    replayCurrentTarget(700);
   }
+  // Always advance to next round (correct or incorrect) after short delay
+  setTimeout(()=>{ if(playing) startNextRound(); }, 500);
 }
-
 function computeFinalScore(scoreVal, timeRem){ return (scoreVal * 1000) + Math.floor(Math.max(0,timeRem) * 5); }
 function updateStatus(txt){ statusEl.textContent = txt; }
 
@@ -455,7 +427,7 @@ function startGame(){
       playing = false;
       startBtn.textContent = 'Start'; startBtn.classList.remove('primary'); startBtn.setAttribute('aria-pressed','false');
       const final = computeFinalScore(score, secs);
-      const msg = score < 5 ? pick(['You are my buddy ❤️ Let\\'s play again, shall we?','Great try!']) : pick(['Wow! You crushed it! 🏆','Amazing score!']);
+      const msg = score < 5 ? pick(['You are my buddy ❤️ Let\'s play again, shall we?','Great try!']) : pick(['Wow! You crushed it! 🏆','Amazing score!']);
       updateStatus(`Game finished. Your score is ${score}. ${msg}`);
       saveResultToLeaderboard({name:'Anonymous',score, timeRemaining:secs, finalScore:final, level:selectedLevel, when:Date.now()});
       openResultModal(score, secs, final);
@@ -504,7 +476,7 @@ function openTraining(){
   trainIndex = 0;
   showTrainingLarge(ITEMS[0]);
   updateStatus('Training mode: previewing');
-  // ensure top of content visible so header + controls + training image are seen
+  // make sure header + controls visible
   setTimeout(()=>{ window.scrollTo({top:0,behavior:'smooth'}); }, 50);
 }
 function closeTraining(){
@@ -536,10 +508,11 @@ function renderTrainingPreview(){
 }
 function showTrainingLarge(key){
   const src = (preloadedImages[key] && preloadedImages[key].src) ? preloadedImages[key].src : `images/pujo/${key}.jpg`;
-  trainingLarge.src = src;
+  const imgEl = document.getElementById('trainingLarge');
+  imgEl.src = src;
   Array.from(trainingPreview.children).forEach((n,i)=> n.classList.toggle('current', ITEMS[i]===key));
   const idx = ITEMS.indexOf(key);
-  if(idx >= 0) trainingPreview.children[idx].scrollIntoView({behavior:'smooth', inline:'center'});
+  if(idx >= 0 && trainingPreview.children[idx]) trainingPreview.children[idx].scrollIntoView({behavior:'smooth', inline:'center'});
 }
 async function trainingLoop(){
   while(trainPlaying){
@@ -555,7 +528,7 @@ async function trainingLoop(){
 }
 function startTraining(){ if(trainPlaying) return; trainPlaying = true; trainPlay.disabled=true; trainPause.disabled=false; trainingLoop(); }
 function pauseTraining(){ trainPlaying = false; trainPlay.disabled=false; trainPause.disabled=true; if(trainTimer){ clearTimeout(trainTimer); trainTimer=null; } stopAllAudio(); }
-function stopTraining(){ pauseTraining(); trainIndex = 0; trainingLarge.src=''; Array.from(trainingPreview.children).forEach(n=> n.classList.remove('current')); }
+function stopTraining(){ pauseTraining(); trainIndex = 0; const imgEl = document.getElementById('trainingLarge'); imgEl.src=''; Array.from(trainingPreview.children).forEach(n=> n.classList.remove('current')); }
 
 trainPlay.addEventListener('click', ()=>{ if(trainingPanel.style.display!=='block') openTraining(); startTraining(); });
 trainPause.addEventListener('click', pauseTraining);
@@ -645,7 +618,7 @@ function generateCertificate(name, level, scoreVal, timeRem, finalScoreVal){
   ctx.fillStyle = '#fff7f0'; ctx.fillRect(0,0,w,h);
   ctx.fillStyle = '#111'; ctx.font = 'bold 48px sans-serif'; ctx.textAlign='center';
   ctx.fillText('Pujo — Tap & Play', w/2, 100);
-  ctx.font = '20px sans-serif'; ctx.fillText('Created by Bengalis — For all the Bengalis around the globe.', w/2, 140);
+  ctx.font = '20px sans-serif'; ctx.fillText('Created by Bengali — For all the Bengalis around the globe.', w/2, 140);
   ctx.font = '20px sans-serif'; ctx.fillText('Created and Designed by Animesh — Audio Credits: Ishani', w/2, 170);
   ctx.font = 'bold 56px sans-serif'; ctx.fillText(name, w/2, 260);
   ctx.font = '28px sans-serif'; ctx.fillStyle = '#333'; ctx.fillText(`Level ${level} • Score ${scoreVal} • Time left ${timeRem}s`, w/2, 330);
@@ -663,7 +636,9 @@ function generateCertificate(name, level, scoreVal, timeRem, finalScoreVal){
     setTimeout(()=>{ if(confirm(`Challenge from ${shared.name}: Score ${shared.score} — open challenge?`)){ openModal(`<h3>Challenge</h3><p>${escapeHtml(shared.name)} scored ${shared.score} (final ${shared.finalScore})</p><div style="margin-top:10px"><button id="acceptChallenge" class="btn">Accept</button><button id="closeCh" class="btn">Close</button></div>`); document.getElementById('acceptChallenge').addEventListener('click', ()=>{ closeModal(); }); document.getElementById('closeCh').addEventListener('click', closeModal); } }, 600);
   }
 })();
+
 function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
 </script>
 </body>
 </html>
