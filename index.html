@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Pujo — Listen & Tap (Bengali) — All-in-one</title>
+<title>Pujo — Listen & Tap (Bengali) — Training fixed header/footer</title>
 <style>
   :root{--accent:#0f172a;--muted:#666;--bg:#fff7f0}
   *{box-sizing:border-box}
   html,body{height:100%;margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial;background:var(--bg);color:#111}
-  /* Outer container uses full viewport and is column flex */
-  .wrap{max-width:1100px;margin:0 auto;padding:10px;display:flex;flex-direction:column;min-height:100vh}
-  header{display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap}
+  /* sticky header */
+  header{position:sticky;top:0;z-index:1400;background:var(--bg);display:flex;align-items:flex-start;gap:10px;padding:8px 10px;border-bottom:1px solid #eee}
+  .wrap{max-width:1100px;margin:0 auto;width:100%}
   .title{font-weight:900;font-size:18px}
   .subtitle{font-size:13px;color:var(--muted)}
   .controls{margin-left:auto;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
@@ -21,42 +21,43 @@
   .level-btn{padding:6px 10px;border-radius:999px;border:1px solid #cbd5e1;background:#fff;cursor:pointer;font-weight:800;color:#111;font-size:13px}
   .level-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
   .small{font-size:12px;color:var(--muted)}
-  main{flex:1; display:flex; flex-direction:column; min-height:0} /* allow internal scrolling */
-  /* central scroll area (grid or training) */
-  .contentArea{flex:1; min-height:0; overflow:auto; padding-bottom:84px; /* room for bottom bar */ }
+  /* content area sized to viewport minus header & bottom bars */
+  main{min-height:0}
+  .contentArea{overflow:auto; padding:10px; padding-bottom:110px; /* room for bottom bars */ min-height:calc(100vh - 56px - 68px);}
   .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:0 auto;max-width:1100px;padding:4px}
   @media(min-width:640px){ .grid{grid-template-columns:repeat(3,1fr)} }
   @media(min-width:900px){ .grid{grid-template-columns:repeat(4,1fr)} }
-  .card{border-radius:10px;overflow:hidden;border:1px solid #eee;background:#fff;display:flex;flex-direction:column;cursor:pointer;height:140px}
-  @media(min-width:640px){ .card{height:160px} }
-  @media(min-width:900px){ .card{height:185px} }
+  .card{border-radius:10px;overflow:hidden;border:1px solid #eee;background:#fff;display:flex;flex-direction:column;cursor:pointer;height:150px}
+  @media(min-width:640px){ .card{height:170px} }
+  @media(min-width:900px){ .card{height:190px} }
   .imgwrap{height:calc(100% - 34px);overflow:hidden;display:flex;align-items:center;justify-content:center;background:#fff;padding:6px}
-  /* Use contain so tall images are fully visible rather than being cropped */
-  .imgwrap img{width:100%;height:100%;object-fit:contain;object-position:center}
+  .imgwrap img{width:100%;height:100%;object-fit:contain;object-position:center} /* contain ensures full image visible */
   .label{height:34px;line-height:18px;padding:6px 8px;text-align:center;font-weight:800;font-size:13px;background:linear-gradient(180deg,transparent,rgba(255,255,255,0.9));white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .training-panel{display:none;margin:10px;border-radius:10px;background:#fff;border:1px solid #eee;padding:10px}
   .training-large{display:flex;align-items:center;justify-content:center;margin-bottom:8px}
-  .training-large img{width:100%;max-width:720px;max-height:50vh;object-fit:contain;border-radius:8px;background:#fff}
+  .training-large img{width:100%;max-width:820px;max-height:calc(100vh - 56px - 88px);object-fit:contain;border-radius:8px;background:#fff}
   .training-thumb-row{display:flex;gap:8px;overflow:auto;padding:6px 0}
-  .thumb{flex:0 0 auto;width:78px;text-align:center}
-  .thumb img{width:78px;height:60px;object-fit:cover;border-radius:6px;border:2px solid transparent}
+  .thumb{flex:0 0 auto;width:80px;text-align:center}
+  .thumb img{width:80px;height:64px;object-fit:cover;border-radius:6px;border:2px solid transparent}
   .thumb.current img{border-color:var(--accent)}
-  .status-small{margin-top:10px;color:var(--muted);font-size:12px}
-  /* bottom fixed bar (status + credit) */
-  .bottomBar{position:fixed;left:0;right:0;bottom:0;height:68px;display:flex;align-items:center;justify-content:center;padding:6px 12px;z-index:1500}
-  .bottomInner{max-width:1100px;width:100%;display:flex;justify-content:space-between;gap:8px;align-items:center}
-  .bottomStatus, .bottomCredit{background:#000;color:#fff;padding:6px 10px;border-radius:6px;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .bottomStatus{flex:1 1 auto}
-  .bottomCredit{flex:0 0 auto; margin-left:8px; font-size:11px; padding:6px 8px}
-  .modal-back{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:none;align-items:center;justify-content:center;z-index:1200;padding:12px}
+  .status-small{margin-top:6px;color:var(--muted);font-size:12px}
+  /* bottom fixed two thin bars (stacked) */
+  .bottomFixedWrap{position:fixed;left:0;right:0;bottom:0;z-index:1500;display:flex;flex-direction:column;gap:4px;padding:6px}
+  .bottomBarThin{height:34px;background:#000;color:#fff;display:flex;align-items:center;padding:6px 10px;border-radius:6px;max-width:1100px;margin:0 auto;overflow:hidden}
+  .bottomBarThin .marquee{white-space:nowrap;display:inline-block;min-width:10px}
+  .bottomBarCredit{height:22px;background:#000;color:#fff;display:flex;align-items:center;padding:4px 10px;border-radius:6px;max-width:1100px;margin:0 auto;font-size:11px;justify-content:flex-end}
+  /* marquee animation */
+  .marqueeWrap{overflow:hidden;flex:1}
+  .marqueeInner{display:inline-block;will-change:transform;animation:marquee 14s linear infinite}
+  @keyframes marquee{ from{transform:translateX(0)} to{transform:translateX(-50%)} }
+  .modal-back{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:none;align-items:center;justify-content:center;z-index:1600;padding:12px}
   .modal{background:#fff;padding:14px;border-radius:10px;max-width:920px;width:100%;max-height:86vh;overflow:auto;font-size:13px}
   input[type="text"]{padding:8px;border-radius:8px;border:1px solid #ddd;font-size:13px}
   @media(max-width:640px){
     .card{height:130px}
     .btn{font-size:12px;padding:6px 8px}
     .label{font-size:12px}
-    .bottomBar{height:76px}
-    .bottomCredit{font-size:11px}
+    .training-large img{max-height:calc(100vh - 56px - 96px)}
   }
 </style>
 </head>
@@ -88,10 +89,8 @@
       <button id="lvl2" class="level-btn" data-level="2">Level 2</button>
       <button id="lvl3" class="level-btn" data-level="3">Level 3</button>
     </div>
-    <div class="small">Level 1 — 60s up to 15 items. Level 2 — 120s up to 30 items. Level 3 — 180s all items (labels hidden).</div>
-    <div id="returnToPlayWrap" style="margin-left:auto;display:none">
-      <button id="returnToPlay" class="btn">Return to Play</button>
-    </div>
+    <div style="margin-left:10px" class="small">Level 1 — 60s up to 15 items. Level 2 — 120s up to 30 items. Level 3 — 180s all items (labels hidden).</div>
+    <div id="returnToPlayWrap" style="margin-left:auto;display:none"><button id="returnToPlay" class="btn">Return to Play</button></div>
   </div>
 
   <main>
@@ -119,18 +118,19 @@
         </div>
         <div id="trainingPreview" class="training-thumb-row" style="margin-top:10px"></div>
       </section>
-    </div>
 
-    <div id="status" class="status-small" aria-live="polite">Ready — press Start to enable audio.</div>
+      <div id="status" class="status-small" aria-live="polite" style="margin-top:8px">Ready — press Start to enable audio.</div>
+    </div>
   </main>
+</div>
 
-  <!-- Bottom fixed bar -->
-  <div class="bottomBar" role="status" aria-hidden="false">
-    <div class="bottomInner">
-      <div id="bottomStatus" class="bottomStatus">Status: Ready — press Start to begin.</div>
-      <div class="bottomCredit">Created and Designed by Animesh, Audio: Ishani</div>
-    </div>
+<!-- bottom fixed two thin bars -->
+<div class="bottomFixedWrap" aria-hidden="false">
+  <div class="bottomBarThin">
+    <div style="flex:0 0 10px;margin-right:8px;font-weight:700">Status:</div>
+    <div class="marqueeWrap"><div id="marqueeInner" class="marqueeInner"><span id="bottomStatusText">Ready — press Start to begin.</span>&nbsp;&nbsp;&nbsp;&nbsp;<span id="bottomStatusTextCopy">Ready — press Start to begin.</span></div></div>
   </div>
+  <div class="bottomBarCredit">Created and Designed by 762</div>
 </div>
 
 <div id="modal" class="modal-back" role="dialog" aria-hidden="true">
@@ -140,7 +140,7 @@
 <canvas id="certCanvas" style="display:none"></canvas>
 
 <script>
-/* ====== Data & config (same as before) ====== */
+/* ====== Data (unchanged) ====== */
 const ITEMS = [
   'prodip','kashphool','dhak','kansorghonta','shankho','kolabou','dhunuchi','pushpo','fol',
   'mishti','peda','batasha','alpona','chandmala','saree','punjabi','alta','trishul','bhog',
@@ -168,7 +168,8 @@ const trainStop = document.getElementById('trainStop');
 const trainDelay = document.getElementById('trainDelay');
 const contentArea = document.getElementById('contentArea');
 const statusEl = document.getElementById('status');
-const bottomStatus = document.getElementById('bottomStatus');
+const bottomStatusText = document.getElementById('bottomStatusText');
+const bottomStatusTextCopy = document.getElementById('bottomStatusTextCopy');
 const scoreEl = document.getElementById('score');
 const timerEl = document.getElementById('timer');
 const leaderboardBtn = document.getElementById('leaderboardBtn');
@@ -204,7 +205,7 @@ function shuffle(a){ return a.slice().map(v=>[Math.random(),v]).sort((a,b)=>a[0]
 function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
-/* ===== Audio helpers (unchanged behavior) ===== */
+/* Audio helpers (same approach as before) */
 function ensureAudioContext(){
   if(audioCtx) return audioCtx;
   try{
@@ -279,16 +280,16 @@ async function speakItem(key){
   }
 }
 
-/* Image and preload helpers */
+/* images preload and placeholder */
 const PLACEHOLDER_SVG = 'data:image/svg+xml;utf8,' + encodeURIComponent(
-  '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600"><rect fill="#f3f3f3" width="100%" height="100%"/><text x="50%" y="50%" font-size="28" fill="#777" text-anchor="middle" dy="8">Image not found</text></svg>'
+  '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600"><rect fill="#f3f3f3" width="100%" height="100%"/><text x="50%" y="50%" font-size="28" fill="#777" text-anchor="middle" dy="8">Image not found</text></svg>'
 );
 function capabilityCheck(){ const mem = navigator.deviceMemory || 0; const cores = navigator.hardwareConcurrency || 0; return (mem>=4||cores>=4); }
 function preloadImages(keys){ keys.forEach(k=>{ if(preloadedImages[k]) return; const img=new Image(); img.src=`images/pujo/${k}.jpg`; preloadedImages[k]=img; }); }
 async function backgroundPreload(){ aggressiveAllowed = capabilityCheck(); const first = ITEMS.slice(0,6); preloadImages(first); await Promise.all(first.map(k=>fetchAndMaybeDecode(k))).catch(()=>{}); if(aggressiveAllowed){ for(let i=0;i<ITEMS.length;i+=6){ const set=ITEMS.slice(i,i+6); preloadImages(set); await Promise.all(set.map(k=>fetchAndMaybeDecode(k))).catch(()=>{}); await new Promise(r=>setTimeout(r,180)); } } else { for(let i=0;i<ITEMS.length;i+=4){ const set=ITEMS.slice(i,i+4); preloadImages(set); await Promise.all(set.map(k=>fetchAndMaybeDecode(k))).catch(()=>{}); await new Promise(r=>setTimeout(r,600)); } } }
 function ensureImageAvailable(key, timeoutMs = 1200) { return new Promise((resolve) => { const url = `images/pujo/${key}.jpg`; const img = new Image(); let done = false; const to = setTimeout(()=>{ if(!done){ done = true; img.onload = img.onerror = null; resolve(false); } }, timeoutMs); img.onload = () => { if(done) return; done = true; clearTimeout(to); resolve(true); }; img.onerror = () => { if(done) return; done = true; clearTimeout(to); resolve(false); }; img.src = url; }); }
 
-/* Grid & gameplay (adjusted to 4 items per round so fits well) */
+/* Grid build & round logic (4 items per screen to fit mobile) */
 function buildGrid(keys){
   grid.innerHTML = '';
   const hideLabels = selectedLevel === 3;
@@ -333,8 +334,7 @@ async function startNextRound(){
     const keys = shuffle(ITEMS).slice(0,4);
     buildGrid(keys);
     currentTarget = keys[0];
-    statusEl.textContent = 'Listen and tap the matching image (some images unavailable)';
-    bottomStatus.textContent = statusEl.textContent;
+    updateStatus('Listen and tap the matching image (some images unavailable)');
     await speakItem(currentTarget);
     return;
   }
@@ -352,8 +352,7 @@ async function startNextRound(){
   }
   const keys = shuffle([currentTarget, ...distractors]).slice(0,4);
   buildGrid(keys);
-  statusEl.textContent = 'Listen and tap the matching image';
-  bottomStatus.textContent = statusEl.textContent;
+  updateStatus('Listen and tap the matching image');
   await speakItem(currentTarget);
 }
 
@@ -368,16 +367,20 @@ function onTileClick(key){
   if(!currentTarget) return;
   if(key === currentTarget){
     score++; scoreEl.textContent = score;
-    statusEl.textContent = '✅ ' + pick(['Brilliant!','Great!','Nice!','Super!']);
-    bottomStatus.textContent = statusEl.textContent;
+    updateStatus('✅ ' + pick(['Brilliant!','Great!','Nice!','Super!']));
     setTimeout(()=>{ if(playing) startNextRound(); }, 350);
   } else {
     score = Math.max(0, score-1); scoreEl.textContent = score;
-    statusEl.textContent = pick(['Almost—try again!','So close!','Keep going!']);
-    bottomStatus.textContent = statusEl.textContent;
+    updateStatus(pick(['Almost—try again!','So close!','Keep going!']));
   }
 }
 function computeFinalScore(scoreVal, timeRem){ return (scoreVal * 1000) + Math.floor(Math.max(0,timeRem) * 5); }
+
+function updateStatus(txt){
+  statusEl.textContent = txt;
+  bottomStatusText.textContent = txt;
+  bottomStatusTextCopy.textContent = txt; // copy for marquee continuous scroll
+}
 
 /* Start/Stop/levels */
 function startGame(){
@@ -387,8 +390,7 @@ function startGame(){
   const cfg = LEVELS[selectedLevel];
   secs = cfg.secs; timerEl.textContent = secs;
   targetPool = shuffle(ITEMS).slice(0, Math.min(cfg.maxItems, ITEMS.length));
-  statusEl.textContent = 'Game started — listen for the item';
-  bottomStatus.textContent = statusEl.textContent;
+  updateStatus('Game started — listen for the item');
   if(timer) clearInterval(timer);
   timer = setInterval(()=>{
     secs--; timerEl.textContent = secs;
@@ -398,8 +400,7 @@ function startGame(){
       startBtn.textContent = 'Start'; startBtn.classList.remove('primary'); startBtn.setAttribute('aria-pressed','false');
       const final = computeFinalScore(score, secs);
       const msg = score < 5 ? pick(['You are my buddy ❤️ Let\'s play again, shall we?','Great try!']) : pick(['Wow! You crushed it! 🏆','Amazing score!']);
-      statusEl.textContent = `Game finished. Your score is ${score}. ${msg}`;
-      bottomStatus.textContent = statusEl.textContent;
+      updateStatus(`Game finished. Your score is ${score}. ${msg}`);
       saveResultToLeaderboard({name:'Anonymous',score, timeRemaining:secs, finalScore:final, level:selectedLevel, when:Date.now()});
       openResultModal(score, secs, final);
     }
@@ -412,8 +413,7 @@ function stopGame(){
   if(timer) clearInterval(timer);
   stopAllAudio();
   startBtn.textContent = 'Start'; startBtn.classList.remove('primary'); startBtn.setAttribute('aria-pressed','false');
-  statusEl.textContent = 'Stopped. Press Start to play again.';
-  bottomStatus.textContent = statusEl.textContent;
+  updateStatus('Stopped. Press Start to play again.');
 }
 startBtn.addEventListener('click', ()=>{
   if(trainingPanel.style.display === 'block'){ return; } // disable start while in training
@@ -426,18 +426,15 @@ levelBtns.forEach(b=>{
     levelBtns.forEach(x=>x.classList.remove('active'));
     b.classList.add('active');
     selectedLevel = Number(b.dataset.level);
-    statusEl.textContent = `Level ${selectedLevel} selected. Press Start.`;
-    bottomStatus.textContent = statusEl.textContent;
+    updateStatus(`Level ${selectedLevel} selected. Press Start.`);
     buildGrid(ITEMS.slice(0,4));
   });
 });
 
-/* Training module */
+/* Training module (improved fits + Start hidden while training) */
 function openTraining(){
   trainingPanel.style.display = 'block';
   trainingPanel.setAttribute('aria-hidden','false');
-  document.querySelector('.contentArea').scrollTop = 0;
-  document.querySelector('.grid') && (document.querySelector('.grid').style.display = 'none');
   grid.style.display = 'none';
   trainingPreview.innerHTML = '';
   levelsWrapper.style.display = 'none';
@@ -446,17 +443,16 @@ function openTraining(){
   certBtn.style.display = 'none';
   returnToPlayWrap.style.display = '';
   trainToggle.classList.add('primary'); trainToggle.setAttribute('aria-pressed','true');
-  startBtn.disabled = true;
+  // hide start while training
+  startBtn.style.display = 'none';
   renderTrainingPreview();
   trainIndex = 0;
   showTrainingLarge(ITEMS[0]);
-  statusEl.textContent = 'Training mode: previewing items';
-  bottomStatus.textContent = statusEl.textContent;
+  updateStatus('Training mode: previewing items');
 }
 function closeTraining(){
   trainingPanel.style.display = 'none';
   trainingPanel.setAttribute('aria-hidden','true');
-  document.querySelector('.grid') && (document.querySelector('.grid').style.display = '');
   grid.style.display = '';
   levelsWrapper.style.display = '';
   leaderboardBtn.style.display = '';
@@ -464,10 +460,9 @@ function closeTraining(){
   certBtn.style.display = '';
   returnToPlayWrap.style.display = 'none';
   trainToggle.classList.remove('primary'); trainToggle.setAttribute('aria-pressed','false');
-  startBtn.disabled = false;
+  startBtn.style.display = ''; // show start again
   stopTraining();
-  statusEl.textContent = 'Training closed';
-  bottomStatus.textContent = statusEl.textContent;
+  updateStatus('Training closed');
 }
 trainToggle.addEventListener('click', ()=>{ const open = trainingPanel.style.display === 'block'; if(open) closeTraining(); else openTraining(); });
 
@@ -516,12 +511,7 @@ returnToPlay.addEventListener('click', ()=>{ closeTraining(); });
 
 /* Leaderboard/Share/Cert (same as before) */
 function saveResultToLeaderboard(entry){
-  try{
-    const lb = JSON.parse(localStorage.getItem(LB_KEY) || '[]');
-    lb.push(entry);
-    lb.sort((a,b)=> b.finalScore - a.finalScore || b.score - a.score || a.timeRemaining - b.timeRemaining);
-    localStorage.setItem(LB_KEY, JSON.stringify(lb.slice(0,200)));
-  }catch(e){}
+  try{ const lb = JSON.parse(localStorage.getItem(LB_KEY) || '[]'); lb.push(entry); lb.sort((a,b)=> b.finalScore - a.finalScore || b.score - a.score || a.timeRemaining - b.timeRemaining); localStorage.setItem(LB_KEY, JSON.stringify(lb.slice(0,200))); }catch(e){}
 }
 function loadLeaderboard(){ try{ return JSON.parse(localStorage.getItem(LB_KEY) || '[]'); }catch(e){ return []; } }
 
@@ -583,9 +573,7 @@ certBtn.addEventListener('click', ()=>{
   generateCertificate(r.name || 'Player', r.level, r.score, r.timeRemaining, r.finalScore);
 });
 
-function generateShareURL(payload){
-  try{ const s = btoa(unescape(encodeURIComponent(JSON.stringify(payload)))); return location.origin + location.pathname + '?r=' + s; }catch(e){ return location.href; }
-}
+function generateShareURL(payload){ try{ const s = btoa(unescape(encodeURIComponent(JSON.stringify(payload)))); return location.origin + location.pathname + '?r=' + s; }catch(e){ return location.href; } }
 function tryReadShared(){ try{ const params = new URLSearchParams(location.search); const r = params.get('r'); if(!r) return null; return JSON.parse(decodeURIComponent(escape(atob(r)))); }catch(e){ return null; } }
 
 function openModal(html){ modalContent.innerHTML = html; modal.style.display = 'flex'; modal.setAttribute('aria-hidden','false'); }
@@ -595,24 +583,25 @@ modal.addEventListener('click', (e)=>{ if(e.target === modal) closeModal(); });
 function downloadText(filename, text){ const blob = new Blob([text], {type:'application/json'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url); }
 function copyToClipboard(txt){ if(navigator.clipboard) return navigator.clipboard.writeText(txt); return Promise.reject(); }
 
-/* Certificate generation */
+/* Certificate gen */
 function generateCertificate(name, level, scoreVal, timeRem, finalScoreVal){
   const canvas = certCanvas; const w = 1200, h = 675; canvas.width = w; canvas.height = h; const ctx = canvas.getContext('2d');
   ctx.fillStyle = '#fff7f0'; ctx.fillRect(0,0,w,h);
   ctx.fillStyle = '#111'; ctx.font = 'bold 48px sans-serif'; ctx.textAlign='center';
   ctx.fillText('Pujo — Tap & Play', w/2, 100);
-  ctx.font = '20px sans-serif'; ctx.fillText('Presented by Created and Designed by Animesh', w/2, 140);
+  ctx.font = '20px sans-serif'; ctx.fillText('Presented by Created and Designed by 762', w/2, 140);
   ctx.font = 'bold 56px sans-serif'; ctx.fillText(name, w/2, 260);
   ctx.font = '28px sans-serif'; ctx.fillStyle = '#333'; ctx.fillText(`Level ${level} • Score ${scoreVal} • Time left ${timeRem}s`, w/2, 330);
   ctx.fillText(`Final score: ${finalScoreVal}`, w/2, 370);
-  canvas.toBlob(blob=>{ const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download = `pujo_certificate_${(name||'player').replace(/\s+/g,'_')}.png`; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url); }, 'image/png');
+  canvas.toBlob(blob=>{ const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `pujo_certificate_${(name||'player').replace(/\s+/g,'_')}.png`; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url); }, 'image/png');
 }
 
 /* INIT */
 (function init(){
   buildGrid(ITEMS.slice(0,4));
-  statusEl.textContent = 'Ready — press Start to enable audio.';
-  bottomStatus.textContent = statusEl.textContent;
+  updateStatus('Ready — press Start to enable audio.');
+  bottomStatusText.textContent = 'Ready — press Start to begin.';
+  bottomStatusTextCopy.textContent = bottomStatusText.textContent;
   backgroundPreload().catch(()=>{});
   const shared = tryReadShared();
   if(shared){
