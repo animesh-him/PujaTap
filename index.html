@@ -8,46 +8,48 @@
   :root{--accent:#0f172a;--muted:#666;--bg:#fff7f0}
   *{box-sizing:border-box}
   html,body{height:100%;margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial;background:var(--bg);color:#111}
-  .wrap{max-width:1100px;margin:0 auto;padding:12px;display:flex;flex-direction:column;min-height:100vh}
-  header{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap}
+  .wrap{max-width:1100px;margin:0 auto;padding:10px;display:flex;flex-direction:column;min-height:100vh}
+  header{display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap}
   .title{font-weight:900;font-size:18px}
   .subtitle{font-size:13px;color:var(--muted)}
-  .controls{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-  .btn{padding:8px 12px;border-radius:10px;border:1px solid #cbd5e1;background:#fff;color:#111;cursor:pointer;font-weight:800;white-space:nowrap}
+  .controls{margin-left:auto;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+  /* slimmer button style */
+  .btn{padding:6px 10px;border-radius:8px;border:1px solid #cbd5e1;background:#fff;color:#111;cursor:pointer;font-weight:800;white-space:nowrap;font-size:13px}
   .btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
-  .pill{background:#f3f3f3;padding:6px 10px;border-radius:999px;font-weight:800;display:inline-flex;align-items:center;gap:8px}
-  .levels{display:flex;gap:8px;align-items:center}
-  .level-btn{padding:6px 10px;border-radius:999px;border:1px solid #cbd5e1;background:#fff;cursor:pointer;font-weight:800;color:#111}
+  .pill{background:#f3f3f3;padding:6px 10px;border-radius:999px;font-weight:800;display:inline-flex;align-items:center;gap:8px;font-size:13px}
+  .levels{display:flex;gap:6px;align-items:center}
+  .level-btn{padding:6px 10px;border-radius:999px;border:1px solid #cbd5e1;background:#fff;cursor:pointer;font-weight:800;color:#111;font-size:13px}
   .level-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
-  .small{font-size:13px;color:var(--muted)}
+  .small{font-size:12px;color:var(--muted)}
   main{flex:1; display:flex; flex-direction:column}
   .grid-wrap{flex:1; overflow:auto;padding-top:10px;padding-bottom:10px}
-  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:0 auto;max-width:1100px;padding:4px}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:0 auto;max-width:1100px;padding:4px}
   @media(min-width:640px){ .grid{grid-template-columns:repeat(3,1fr)} }
   @media(min-width:900px){ .grid{grid-template-columns:repeat(4,1fr)} }
-  .card{border-radius:12px;overflow:hidden;border:1px solid #eee;background:#fff;display:flex;flex-direction:column;cursor:pointer;height:132px}
-  @media(min-width:640px){ .card{height:170px} }
-  @media(min-width:900px){ .card{height:200px} }
-  .imgwrap{height:calc(100% - 36px);overflow:hidden;display:flex;align-items:center;justify-content:center;background:#fff}
+  .card{border-radius:10px;overflow:hidden;border:1px solid #eee;background:#fff;display:flex;flex-direction:column;cursor:pointer;height:140px}
+  @media(min-width:640px){ .card{height:165px} }
+  @media(min-width:900px){ .card{height:190px} }
+  .imgwrap{height:calc(100% - 34px);overflow:hidden;display:flex;align-items:center;justify-content:center;background:#fff}
+  /* use contain so tall images fully fit */
   .imgwrap img{width:100%;height:100%;object-fit:contain;object-position:center}
-  .label{height:36px;line-height:18px;padding:6px 8px;text-align:center;font-weight:800;font-size:13px;background:linear-gradient(180deg,transparent,rgba(255,255,255,0.9));white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .training-panel{display:none;margin-top:12px;padding:12px;border-radius:12px;background:#fff;border:1px solid #eee}
+  .label{height:34px;line-height:18px;padding:6px 8px;text-align:center;font-weight:800;font-size:13px;background:linear-gradient(180deg,transparent,rgba(255,255,255,0.9));white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .training-panel{display:none;margin-top:10px;padding:10px;border-radius:10px;background:#fff;border:1px solid #eee}
   .training-large{display:flex;align-items:center;justify-content:center;margin-bottom:8px}
-  .training-large img{width:100%;max-width:720px;max-height:60vh;object-fit:contain;border-radius:8px}
+  .training-large img{width:100%;max-width:720px;max-height:56vh;object-fit:contain;border-radius:8px}
   .training-thumb-row{display:flex;gap:8px;overflow:auto;padding:6px 0}
-  .thumb{flex:0 0 auto;width:84px;text-align:center}
-  .thumb img{width:84px;height:64px;object-fit:cover;border-radius:6px;border:2px solid transparent}
+  .thumb{flex:0 0 auto;width:78px;text-align:center}
+  .thumb img{width:78px;height:60px;object-fit:cover;border-radius:6px;border:2px solid transparent}
   .thumb.current img{border-color:var(--accent)}
-  .status{margin-top:12px;padding:10px;border-radius:8px;background:#fffef8;border:1px solid #ffe8b5}
-  .footer{margin-top:8px;display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px;border-radius:4px;background:transparent}
-  .footer .credit{font-size:12px;color:#fff;background:#000;padding:6px 8px;border-radius:3px;text-align:center;width:100%}
+  /* status as small inline text (same size as footer credit) */
+  .status-small{margin-top:10px;color:var(--muted);font-size:12px}
+  .footer{margin-top:8px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .footer .credit{font-size:11px;color:#fff;background:#000;padding:6px 8px;border-radius:3px;text-align:center;width:100%}
   .modal-back{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:none;align-items:center;justify-content:center;z-index:1200;padding:12px}
   .modal{background:#fff;padding:14px;border-radius:10px;max-width:920px;width:100%;max-height:86vh;overflow:auto;font-size:13px}
   input[type="text"]{padding:8px;border-radius:8px;border:1px solid #ddd;font-size:13px}
-  footer.sitefoot{margin-top:8px}
   @media(max-width:640px){
     .card{height:140px}
-    .controls{gap:6px}
+    .btn{font-size:12px;padding:6px 8px}
     .label{font-size:12px}
     .footer .credit{font-size:11px;padding:6px}
   }
@@ -66,6 +68,7 @@
       <div class="pill">⏱ <b id="timer">0</b>s</div>
 
       <button id="trainToggle" class="btn" aria-pressed="false">Training</button>
+      <!-- these three will be hidden during training -->
       <button id="leaderboardBtn" class="btn">Leaderboard</button>
       <button id="shareBtn" class="btn">Share</button>
       <button id="certBtn" class="btn">Certificate</button>
@@ -82,23 +85,27 @@
       <button id="lvl3" class="level-btn" data-level="3">Level 3</button>
     </div>
     <div class="small">Level 1 — 60s up to 15 items. Level 2 — 120s up to 30 items. Level 3 — 180s all items (labels hidden).</div>
+    <!-- When training is active a slim return button appears here -->
+    <div id="returnToPlayWrap" style="margin-left:auto;display:none">
+      <button id="returnToPlay" class="btn">Return to Play</button>
+    </div>
   </div>
 
   <main>
     <div class="grid-wrap">
-      <div id="grid" class="grid" aria-live="polite" aria-label="Game grid">[Grid items load here...]</div>
+      <div id="grid" class="grid" aria-live="polite" aria-label="Game grid"></div>
     </div>
 
     <section id="trainingPanel" class="training-panel" aria-hidden="true">
       <div class="training-large">
         <img id="trainingLarge" src="" alt="Training preview">
       </div>
-      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-        <button id="trainPlay" class="btn">▶ Play</button>
-        <button id="trainPause" class="btn" disabled>⏸ Pause</button>
-        <button id="trainPrev" class="btn">Prev</button>
-        <button id="trainNext" class="btn">Next</button>
-        <label class="small">Delay:
+      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+        <button id="trainPlay" class="btn">▶</button>
+        <button id="trainPause" class="btn" disabled>⏸</button>
+        <button id="trainPrev" class="btn">◀</button>
+        <button id="trainNext" class="btn">▶▶</button>
+        <label class="small" style="margin-left:6px">Delay:
           <select id="trainDelay" class="btn" style="padding:6px 8px;margin-left:6px">
             <option value="600">0.6s</option>
             <option value="800">0.8s</option>
@@ -111,7 +118,7 @@
       <div id="trainingPreview" class="training-thumb-row" style="margin-top:10px"></div>
     </section>
 
-    <div id="status" class="status" aria-live="polite">Status: Ready — press Start to begin. (Audio will be enabled by Start.)</div>
+    <div id="status" class="status-small" aria-live="polite">Ready — press Start to enable audio.</div>
   </main>
 
   <footer class="sitefoot">
@@ -166,6 +173,8 @@ const shareBtn = document.getElementById('shareBtn');
 const certBtn = document.getElementById('certBtn');
 const levelBtns = Array.from(document.querySelectorAll('.level-btn'));
 const levelsWrapper = document.getElementById('levelsWrapper');
+const returnToPlayWrap = document.getElementById('returnToPlayWrap');
+const returnToPlay = document.getElementById('returnToPlay');
 const modal = document.getElementById('modal');
 const modalContent = document.getElementById('modalContent');
 const certCanvas = document.getElementById('certCanvas');
@@ -188,16 +197,11 @@ let trainTimer = null;
 let soundOn = true;
 let activeSource = null;
 
-/* =========================
-   Helpers
-   ========================= */
 function shuffle(a){ return a.slice().map(v=>[Math.random(),v]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]); }
 function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
-/* =========================
-   Audio (mp3 under audio/bn/)
-   ========================= */
+/* Audio helpers (same as previous) */
 function ensureAudioContext(){
   if(audioCtx) return audioCtx;
   try{
@@ -212,9 +216,7 @@ function ensureAudioContext(){
   }
 }
 function stopAllAudio(){
-  try{
-    if(activeSource && activeSource.stop){ try{ activeSource.stop(0); }catch(e){} activeSource = null; }
-  }catch(e){}
+  try{ if(activeSource && activeSource.stop){ try{ activeSource.stop(0); }catch(e){} activeSource = null; } }catch(e){}
   Object.values(htmlAudio).forEach(a=>{ try{ a.pause(); a.currentTime = 0; }catch(e){} });
 }
 async function fetchAndMaybeDecode(key){
@@ -225,11 +227,7 @@ async function fetchAndMaybeDecode(key){
     if(!res.ok) throw new Error('fetch status ' + res.status);
     const ab = await res.arrayBuffer();
     if(aggressiveAllowed && ensureAudioContext()){
-      try{
-        const decoded = await audioCtx.decodeAudioData(ab);
-        audioBuffers[key] = decoded;
-        return;
-      }catch(e){}
+      try{ const decoded = await audioCtx.decodeAudioData(ab); audioBuffers[key] = decoded; return; }catch(e){}
     }
     const a = new Audio(url); a.preload = 'auto'; htmlAudio[key] = a;
   }catch(e){
@@ -281,9 +279,7 @@ async function speakItem(key){
   }
 }
 
-/* =========================
-   Images
-   ========================= */
+/* Image preload & availability check */
 const PLACEHOLDER_SVG = 'data:image/svg+xml;utf8,' + encodeURIComponent(
   '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600"><rect fill="#f3f3f3" width="100%" height="100%"/><text x="50%" y="50%" font-size="28" fill="#777" text-anchor="middle" dy="8">Image not found</text></svg>'
 );
@@ -304,7 +300,7 @@ async function backgroundPreload(){
     }
   }
 }
-function ensureImageAvailable(key, timeoutMs = 2000) {
+function ensureImageAvailable(key, timeoutMs = 1200) {
   return new Promise((resolve) => {
     const url = `images/pujo/${key}.jpg`;
     const img = new Image();
@@ -316,9 +312,7 @@ function ensureImageAvailable(key, timeoutMs = 2000) {
   });
 }
 
-/* =========================
-   Grid & Game logic
-   ========================= */
+/* Grid & gameplay (4 tiles per screen, fits vertically) */
 function buildGrid(keys){
   grid.innerHTML = '';
   const hideLabels = selectedLevel === 3;
@@ -339,6 +333,7 @@ function buildGrid(keys){
     grid.appendChild(c);
   });
 }
+
 function makeRoundPool(){
   if(!targetPool || targetPool.length === 0){
     const cfg = LEVELS[selectedLevel];
@@ -347,14 +342,14 @@ function makeRoundPool(){
   }
   return targetPool.shift();
 }
+
 async function startNextRound(){
   if(!playing) return;
-  let attempts = 0, candidate = null;
-  while(attempts < 8){
-    attempts++;
+  let candidate = null;
+  for(let attempts=0; attempts<8; attempts++){
     candidate = makeRoundPool();
     if(!candidate) break;
-    const ok = await ensureImageAvailable(candidate, 1200);
+    const ok = await ensureImageAvailable(candidate, 900);
     if(ok) break;
     candidate = null;
   }
@@ -371,7 +366,7 @@ async function startNextRound(){
   const candidates = shuffle(ITEMS.filter(x=>x!==currentTarget));
   for(let i=0; i<candidates.length && distractors.length<3; i++){
     const d = candidates[i];
-    const ok = await ensureImageAvailable(d, 900);
+    const ok = await ensureImageAvailable(d, 700);
     if(ok) distractors.push(d);
   }
   if(distractors.length < 3){
@@ -383,6 +378,7 @@ async function startNextRound(){
   statusEl.textContent = 'Listen and tap the matching image';
   await speakItem(currentTarget);
 }
+
 function onTileClick(key){
   if(!playing && trainingPanel.style.display === 'block'){
     pauseTraining();
@@ -403,9 +399,7 @@ function onTileClick(key){
 }
 function computeFinalScore(scoreVal, timeRem){ return (scoreVal * 1000) + Math.floor(Math.max(0,timeRem) * 5); }
 
-/* =========================
-   Start / Stop / Levels behavior
-   ========================= */
+/* Start/Stop/levels behavior */
 function startGame(){
   ensureAudioContext();
   stopAllAudio();
@@ -420,8 +414,7 @@ function startGame(){
     if(secs <= 0){
       clearInterval(timer);
       playing = false;
-      startBtn.textContent = 'Start';
-      startBtn.classList.remove('primary');
+      startBtn.textContent = 'Start'; startBtn.classList.remove('primary'); startBtn.setAttribute('aria-pressed','false');
       const final = computeFinalScore(score, secs);
       const msg = score < 5 ? pick(['You are my buddy ❤️ Let\'s play again, shall we?','Great try!']) : pick(['Wow! You crushed it! 🏆','Amazing score!']);
       statusEl.textContent = `Time’s up: Your score is ${score}. ${msg}`;
@@ -429,34 +422,22 @@ function startGame(){
       openResultModal(score, secs, final);
     }
   }, 1000);
-  startBtn.textContent = 'Stop';
-  startBtn.classList.add('primary');
-  startBtn.setAttribute('aria-pressed','true');
+  startBtn.textContent = 'Stop'; startBtn.classList.add('primary'); startBtn.setAttribute('aria-pressed','true');
   startNextRound();
 }
 function stopGame(){
   playing = false;
   if(timer) clearInterval(timer);
   stopAllAudio();
-  startBtn.textContent = 'Start';
-  startBtn.classList.remove('primary');
-  startBtn.setAttribute('aria-pressed','false');
+  startBtn.textContent = 'Start'; startBtn.classList.remove('primary'); startBtn.setAttribute('aria-pressed','false');
   statusEl.textContent = 'Stopped. Press Start to play again.';
 }
 startBtn.addEventListener('click', ()=>{
-  // If training open, prevent start (avoids confusion)
-  if(trainingPanel.style.display === 'block') { return; }
+  if(trainingPanel.style.display === 'block'){ return; }
   if(!playing) startGame(); else stopGame();
 });
+muteBtn.addEventListener('click', ()=>{ soundOn = !soundOn; muteBtn.textContent = soundOn ? '🔊 On' : '🔇 Off'; if(!soundOn) stopAllAudio(); });
 
-/* mute */
-muteBtn.addEventListener('click', ()=>{
-  soundOn = !soundOn;
-  muteBtn.textContent = soundOn ? '🔊 On' : '🔇 Off';
-  if(!soundOn) stopAllAudio();
-});
-
-/* level selection */
 levelBtns.forEach(b=>{
   b.addEventListener('click', ()=>{
     levelBtns.forEach(x=>x.classList.remove('active'));
@@ -467,17 +448,18 @@ levelBtns.forEach(b=>{
   });
 });
 
-/* =========================
-   Training module (fixed & improved)
-   ========================= */
+/* Training module (reworked) */
 function openTraining(){
   trainingPanel.style.display = 'block';
   trainingPanel.setAttribute('aria-hidden','false');
   document.querySelector('.grid-wrap').style.display = 'none';
-  // Hide levels to avoid confusion
+  // hide irrelevant controls
   levelsWrapper.style.display = 'none';
-  trainToggle.classList.add('primary');
-  trainToggle.setAttribute('aria-pressed','true');
+  leaderboardBtn.style.display = 'none';
+  shareBtn.style.display = 'none';
+  certBtn.style.display = 'none';
+  returnToPlayWrap.style.display = '';
+  trainToggle.classList.add('primary'); trainToggle.setAttribute('aria-pressed','true');
   startBtn.disabled = true;
   renderTrainingPreview();
   trainIndex = 0;
@@ -489,18 +471,17 @@ function closeTraining(){
   trainingPanel.setAttribute('aria-hidden','true');
   document.querySelector('.grid-wrap').style.display = '';
   levelsWrapper.style.display = '';
-  trainToggle.classList.remove('primary');
-  trainToggle.setAttribute('aria-pressed','false');
+  leaderboardBtn.style.display = '';
+  shareBtn.style.display = '';
+  certBtn.style.display = '';
+  returnToPlayWrap.style.display = 'none';
+  trainToggle.classList.remove('primary'); trainToggle.setAttribute('aria-pressed','false');
   startBtn.disabled = false;
   stopTraining();
   statusEl.textContent = 'Training closed';
 }
-trainToggle.addEventListener('click', ()=>{
-  const open = trainingPanel.style.display === 'block';
-  if(open) closeTraining(); else openTraining();
-});
+trainToggle.addEventListener('click', ()=>{ const open = trainingPanel.style.display === 'block'; if(open) closeTraining(); else openTraining(); });
 
-/* previews */
 function renderTrainingPreview(){
   trainingPreview.innerHTML = '';
   ITEMS.forEach((k, idx)=>{
@@ -542,9 +523,10 @@ trainNext.addEventListener('click', ()=>{ pauseTraining(); trainIndex=(trainInde
 trainPrev.addEventListener('click', ()=>{ pauseTraining(); trainIndex=(trainIndex-1+ITEMS.length)%ITEMS.length; showTrainingLarge(ITEMS[trainIndex]); speakItem(ITEMS[trainIndex]); });
 trainStop.addEventListener('click', ()=>{ stopTraining(); });
 
-/* =========================
-   Leaderboard, sharing, certificate (same as before)
-   ========================= */
+/* Return to play button */
+returnToPlay.addEventListener('click', ()=>{ closeTraining(); });
+
+/* Leaderboard / share / cert (same functionality) */
 function saveResultToLeaderboard(entry){
   try{
     const lb = JSON.parse(localStorage.getItem(LB_KEY) || '[]');
@@ -638,9 +620,7 @@ function generateCertificate(name, level, scoreVal, timeRem, finalScoreVal){
   canvas.toBlob(blob=>{ const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download = `pujo_certificate_${(name||'player').replace(/\s+/g,'_')}.png`; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url); }, 'image/png');
 }
 
-/* =========================
-   INIT
-   ========================= */
+/* INIT */
 (function init(){
   buildGrid(ITEMS.slice(0,4));
   statusEl.textContent = 'Ready — press Start to enable audio.';
