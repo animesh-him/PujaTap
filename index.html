@@ -8,12 +8,12 @@
   :root{--accent:#0f172a;--muted:#666;--bg:#fff7f0}
   *{box-sizing:border-box}
   html,body{height:100%;margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial;background:var(--bg);color:#111}
-  .wrap{max-width:1100px;margin:0 auto;padding:10px;display:flex;flex-direction:column;min-height:100vh}
+  /* Make wrapper exactly viewport height so footer + status remain visible */
+  .wrap{max-width:1100px;margin:0 auto;padding:10px;display:flex;flex-direction:column;height:100vh}
   header{display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap}
   .title{font-weight:900;font-size:18px}
   .subtitle{font-size:13px;color:var(--muted)}
   .controls{margin-left:auto;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
-  /* slimmer button style */
   .btn{padding:6px 10px;border-radius:8px;border:1px solid #cbd5e1;background:#fff;color:#111;cursor:pointer;font-weight:800;white-space:nowrap;font-size:13px}
   .btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
   .pill{background:#f3f3f3;padding:6px 10px;border-radius:999px;font-weight:800;display:inline-flex;align-items:center;gap:8px;font-size:13px}
@@ -21,8 +21,9 @@
   .level-btn{padding:6px 10px;border-radius:999px;border:1px solid #cbd5e1;background:#fff;cursor:pointer;font-weight:800;color:#111;font-size:13px}
   .level-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
   .small{font-size:12px;color:var(--muted)}
-  main{flex:1; display:flex; flex-direction:column}
-  .grid-wrap{flex:1; overflow:auto;padding-top:10px;padding-bottom:10px}
+  main{flex:1; display:flex; flex-direction:column; min-height:0} /* important: allow children to shrink */
+  /* Make the central area scrollable while header/status/footer remain visible */
+  .grid-wrap{flex:1; overflow:auto;padding-top:10px;padding-bottom:10px;min-height:0}
   .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:0 auto;max-width:1100px;padding:4px}
   @media(min-width:640px){ .grid{grid-template-columns:repeat(3,1fr)} }
   @media(min-width:900px){ .grid{grid-template-columns:repeat(4,1fr)} }
@@ -30,18 +31,19 @@
   @media(min-width:640px){ .card{height:165px} }
   @media(min-width:900px){ .card{height:190px} }
   .imgwrap{height:calc(100% - 34px);overflow:hidden;display:flex;align-items:center;justify-content:center;background:#fff}
-  /* use contain so tall images fully fit */
+  /* Use contain so tall images are fully visible rather than cropped */
   .imgwrap img{width:100%;height:100%;object-fit:contain;object-position:center}
   .label{height:34px;line-height:18px;padding:6px 8px;text-align:center;font-weight:800;font-size:13px;background:linear-gradient(180deg,transparent,rgba(255,255,255,0.9));white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .training-panel{display:none;margin-top:10px;padding:10px;border-radius:10px;background:#fff;border:1px solid #eee}
+  /* training large reduced max-height to keep footer visible */
   .training-large{display:flex;align-items:center;justify-content:center;margin-bottom:8px}
-  .training-large img{width:100%;max-width:720px;max-height:56vh;object-fit:contain;border-radius:8px}
+  .training-large img{width:100%;max-width:720px;max-height:44vh;object-fit:contain;border-radius:8px}
   .training-thumb-row{display:flex;gap:8px;overflow:auto;padding:6px 0}
   .thumb{flex:0 0 auto;width:78px;text-align:center}
   .thumb img{width:78px;height:60px;object-fit:cover;border-radius:6px;border:2px solid transparent}
   .thumb.current img{border-color:var(--accent)}
-  /* status as small inline text (same size as footer credit) */
   .status-small{margin-top:10px;color:var(--muted);font-size:12px}
+  /* footer is visible (small font and dark background as requested) */
   .footer{margin-top:8px;display:flex;justify-content:space-between;align-items:center;gap:8px}
   .footer .credit{font-size:11px;color:#fff;background:#000;padding:6px 8px;border-radius:3px;text-align:center;width:100%}
   .modal-back{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:none;align-items:center;justify-content:center;z-index:1200;padding:12px}
@@ -68,7 +70,6 @@
       <div class="pill">⏱ <b id="timer">0</b>s</div>
 
       <button id="trainToggle" class="btn" aria-pressed="false">Training</button>
-      <!-- these three will be hidden during training -->
       <button id="leaderboardBtn" class="btn">Leaderboard</button>
       <button id="shareBtn" class="btn">Share</button>
       <button id="certBtn" class="btn">Certificate</button>
@@ -85,7 +86,6 @@
       <button id="lvl3" class="level-btn" data-level="3">Level 3</button>
     </div>
     <div class="small">Level 1 — 60s up to 15 items. Level 2 — 120s up to 30 items. Level 3 — 180s all items (labels hidden).</div>
-    <!-- When training is active a slim return button appears here -->
     <div id="returnToPlayWrap" style="margin-left:auto;display:none">
       <button id="returnToPlay" class="btn">Return to Play</button>
     </div>
@@ -94,29 +94,29 @@
   <main>
     <div class="grid-wrap">
       <div id="grid" class="grid" aria-live="polite" aria-label="Game grid"></div>
-    </div>
 
-    <section id="trainingPanel" class="training-panel" aria-hidden="true">
-      <div class="training-large">
-        <img id="trainingLarge" src="" alt="Training preview">
-      </div>
-      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-        <button id="trainPlay" class="btn">▶</button>
-        <button id="trainPause" class="btn" disabled>⏸</button>
-        <button id="trainPrev" class="btn">◀</button>
-        <button id="trainNext" class="btn">▶▶</button>
-        <label class="small" style="margin-left:6px">Delay:
-          <select id="trainDelay" class="btn" style="padding:6px 8px;margin-left:6px">
-            <option value="600">0.6s</option>
-            <option value="800">0.8s</option>
-            <option value="1000" selected>1.0s</option>
-            <option value="1400">1.4s</option>
-          </select>
-        </label>
-        <button id="trainStop" class="btn">Stop</button>
-      </div>
-      <div id="trainingPreview" class="training-thumb-row" style="margin-top:10px"></div>
-    </section>
+      <section id="trainingPanel" class="training-panel" aria-hidden="true">
+        <div class="training-large">
+          <img id="trainingLarge" src="" alt="Training preview">
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+          <button id="trainPlay" class="btn">▶</button>
+          <button id="trainPause" class="btn" disabled>⏸</button>
+          <button id="trainPrev" class="btn">◀</button>
+          <button id="trainNext" class="btn">▶▶</button>
+          <label class="small" style="margin-left:6px">Delay:
+            <select id="trainDelay" class="btn" style="padding:6px 8px;margin-left:6px">
+              <option value="600">0.6s</option>
+              <option value="800">0.8s</option>
+              <option value="1000" selected>1.0s</option>
+              <option value="1400">1.4s</option>
+            </select>
+          </label>
+          <button id="trainStop" class="btn">Stop</button>
+        </div>
+        <div id="trainingPreview" class="training-thumb-row" style="margin-top:10px"></div>
+      </section>
+    </div>
 
     <div id="status" class="status-small" aria-live="polite">Ready — press Start to enable audio.</div>
   </main>
@@ -136,7 +136,7 @@
 
 <script>
 /* =========================
-   Data and config
+   Data and config (unchanged)
    ========================= */
 const ITEMS = [
   'prodip','kashphool','dhak','kansorghonta','shankho','kolabou','dhunuchi','pushpo','fol',
@@ -201,7 +201,7 @@ function shuffle(a){ return a.slice().map(v=>[Math.random(),v]).sort((a,b)=>a[0]
 function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
-/* Audio helpers (same as previous) */
+/* Audio helpers */
 function ensureAudioContext(){
   if(audioCtx) return audioCtx;
   try{
@@ -211,8 +211,7 @@ function ensureAudioContext(){
     if(audioCtx.state === 'suspended'){ audioCtx.resume().catch(()=>{}); }
     return audioCtx;
   }catch(e){
-    audioCtx = null;
-    return null;
+    audioCtx = null; return null;
   }
 }
 function stopAllAudio(){
@@ -279,7 +278,7 @@ async function speakItem(key){
   }
 }
 
-/* Image preload & availability check */
+/* Image preload & availability */
 const PLACEHOLDER_SVG = 'data:image/svg+xml;utf8,' + encodeURIComponent(
   '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600"><rect fill="#f3f3f3" width="100%" height="100%"/><text x="50%" y="50%" font-size="28" fill="#777" text-anchor="middle" dy="8">Image not found</text></svg>'
 );
@@ -312,7 +311,7 @@ function ensureImageAvailable(key, timeoutMs = 1200) {
   });
 }
 
-/* Grid & gameplay (4 tiles per screen, fits vertically) */
+/* Grid & gameplay */
 function buildGrid(keys){
   grid.innerHTML = '';
   const hideLabels = selectedLevel === 3;
@@ -448,12 +447,11 @@ levelBtns.forEach(b=>{
   });
 });
 
-/* Training module (reworked) */
+/* Training module */
 function openTraining(){
   trainingPanel.style.display = 'block';
   trainingPanel.setAttribute('aria-hidden','false');
   document.querySelector('.grid-wrap').style.display = 'none';
-  // hide irrelevant controls
   levelsWrapper.style.display = 'none';
   leaderboardBtn.style.display = 'none';
   shareBtn.style.display = 'none';
@@ -523,10 +521,9 @@ trainNext.addEventListener('click', ()=>{ pauseTraining(); trainIndex=(trainInde
 trainPrev.addEventListener('click', ()=>{ pauseTraining(); trainIndex=(trainIndex-1+ITEMS.length)%ITEMS.length; showTrainingLarge(ITEMS[trainIndex]); speakItem(ITEMS[trainIndex]); });
 trainStop.addEventListener('click', ()=>{ stopTraining(); });
 
-/* Return to play button */
 returnToPlay.addEventListener('click', ()=>{ closeTraining(); });
 
-/* Leaderboard / share / cert (same functionality) */
+/* Leaderboard / share / cert (same as before) */
 function saveResultToLeaderboard(entry){
   try{
     const lb = JSON.parse(localStorage.getItem(LB_KEY) || '[]');
