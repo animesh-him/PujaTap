@@ -20,7 +20,6 @@
   .level-btn{padding:6px 10px;border-radius:999px;border:1px solid #cbd5e1;background:#fff;cursor:pointer;font-weight:800;color:#111}
   .level-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
   .small{font-size:13px;color:var(--muted)}
-  /* Grid / main area adjusts to viewport so footer remains visible */
   main{flex:1; display:flex; flex-direction:column}
   .grid-wrap{flex:1; overflow:auto;padding-top:10px;padding-bottom:10px}
   .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:0 auto;max-width:1100px;padding:4px}
@@ -45,7 +44,6 @@
   .modal-back{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:none;align-items:center;justify-content:center;z-index:1200;padding:12px}
   .modal{background:#fff;padding:14px;border-radius:10px;max-width:920px;width:100%;max-height:86vh;overflow:auto;font-size:13px}
   input[type="text"]{padding:8px;border-radius:8px;border:1px solid #ddd;font-size:13px}
-  /* Keep footer visible and not overlay */
   footer.sitefoot{margin-top:8px}
   @media(max-width:640px){
     .card{height:140px}
@@ -72,13 +70,13 @@
       <button id="shareBtn" class="btn">Share</button>
       <button id="certBtn" class="btn">Certificate</button>
 
-      <button id="startBtn" class="btn primary">Start</button>
+      <button id="startBtn" class="btn" aria-pressed="false">Start</button>
       <button id="muteBtn" class="btn">🔊 On</button>
     </div>
   </header>
 
   <div style="margin-top:8px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-    <div class="levels" role="tablist" aria-label="Levels">
+    <div id="levelsWrapper" class="levels" role="tablist" aria-label="Levels">
       <button id="lvl1" class="level-btn active" data-level="1">Level 1</button>
       <button id="lvl2" class="level-btn" data-level="2">Level 2</button>
       <button id="lvl3" class="level-btn" data-level="3">Level 3</button>
@@ -131,9 +129,8 @@
 
 <script>
 /* =========================
-   CONFIG & DATA
+   Data and config
    ========================= */
-
 const ITEMS = [
   'prodip','kashphool','dhak','kansorghonta','shankho','kolabou','dhunuchi','pushpo','fol',
   'mishti','peda','batasha','alpona','chandmala','saree','punjabi','alta','trishul','bhog',
@@ -168,6 +165,7 @@ const leaderboardBtn = document.getElementById('leaderboardBtn');
 const shareBtn = document.getElementById('shareBtn');
 const certBtn = document.getElementById('certBtn');
 const levelBtns = Array.from(document.querySelectorAll('.level-btn'));
+const levelsWrapper = document.getElementById('levelsWrapper');
 const modal = document.getElementById('modal');
 const modalContent = document.getElementById('modalContent');
 const certCanvas = document.getElementById('certCanvas');
@@ -191,16 +189,15 @@ let soundOn = true;
 let activeSource = null;
 
 /* =========================
-   Helpers (silenced)
+   Helpers
    ========================= */
 function shuffle(a){ return a.slice().map(v=>[Math.random(),v]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]); }
 function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
 /* =========================
-   AUDIO (mp3 files in audio/bn/)
+   Audio (mp3 under audio/bn/)
    ========================= */
-
 function ensureAudioContext(){
   if(audioCtx) return audioCtx;
   try{
@@ -214,14 +211,12 @@ function ensureAudioContext(){
     return null;
   }
 }
-
 function stopAllAudio(){
   try{
     if(activeSource && activeSource.stop){ try{ activeSource.stop(0); }catch(e){} activeSource = null; }
   }catch(e){}
   Object.values(htmlAudio).forEach(a=>{ try{ a.pause(); a.currentTime = 0; }catch(e){} });
 }
-
 async function fetchAndMaybeDecode(key){
   if(audioBuffers[key] || htmlAudio[key]) return;
   const url = `audio/bn/${key}.mp3`;
@@ -241,7 +236,6 @@ async function fetchAndMaybeDecode(key){
     try{ const aa = new Audio(url); aa.preload='auto'; htmlAudio[key] = aa; }catch(err){}
   }
 }
-
 function playBufferOrHtml(key){
   return new Promise(async (resolve)=>{
     if(!soundOn){ resolve(); return; }
@@ -268,7 +262,6 @@ function playBufferOrHtml(key){
     }catch(e){ resolve(); }
   });
 }
-
 async function speakItem(key){
   if(!key) return;
   try{
@@ -289,57 +282,29 @@ async function speakItem(key){
 }
 
 /* =========================
-   IMAGE AVAILABILITY + PRELOAD
+   Images
    ========================= */
-
 const PLACEHOLDER_SVG = 'data:image/svg+xml;utf8,' + encodeURIComponent(
-  '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">' +
-  '<rect fill="#f3f3f3" width="100%" height="100%"/>' +
-  '<text x="50%" y="50%" font-size="28" font-family="Arial, Helvetica, sans-serif" fill="#777" text-anchor="middle" dy="8">Image not found</text>' +
-  '</svg>'
+  '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600"><rect fill="#f3f3f3" width="100%" height="100%"/><text x="50%" y="50%" font-size="28" fill="#777" text-anchor="middle" dy="8">Image not found</text></svg>'
 );
-
-function capabilityCheck(){
-  const mem = navigator.deviceMemory || 0;
-  const cores = navigator.hardwareConcurrency || 0;
-  if(mem >= 4 || cores >= 4) return true;
-  return false;
-}
-
-function preloadImages(keys){
-  keys.forEach(k=>{
-    if(preloadedImages[k]) return;
-    const img = new Image();
-    img.src = `images/pujo/${k}.jpg`;
-    preloadedImages[k] = img;
-  });
-}
-
+function capabilityCheck(){ const mem = navigator.deviceMemory || 0; const cores = navigator.hardwareConcurrency || 0; return (mem>=4||cores>=4); }
+function preloadImages(keys){ keys.forEach(k=>{ if(preloadedImages[k]) return; const img=new Image(); img.src=`images/pujo/${k}.jpg`; preloadedImages[k]=img; }); }
 async function backgroundPreload(){
   aggressiveAllowed = capabilityCheck();
   const first = ITEMS.slice(0,6);
   preloadImages(first);
   await Promise.all(first.map(k=>fetchAndMaybeDecode(k))).catch(()=>{});
   if(aggressiveAllowed){
-    const batch = 6;
-    for(let i=0;i<ITEMS.length;i+=batch){
-      const set = ITEMS.slice(i,i+batch);
-      preloadImages(set);
-      await Promise.all(set.map(k=>fetchAndMaybeDecode(k))).catch(()=>{});
-      await new Promise(r=>setTimeout(r,180));
+    for(let i=0;i<ITEMS.length;i+=6){
+      const set = ITEMS.slice(i,i+6); preloadImages(set); await Promise.all(set.map(k=>fetchAndMaybeDecode(k))).catch(()=>{}); await new Promise(r=>setTimeout(r,180));
     }
   } else {
     for(let i=0;i<ITEMS.length;i+=4){
-      const set = ITEMS.slice(i,i+4);
-      preloadImages(set);
-      await Promise.all(set.map(k=>fetchAndMaybeDecode(k))).catch(()=>{});
-      await new Promise(r=>setTimeout(r,600));
+      const set = ITEMS.slice(i,i+4); preloadImages(set); await Promise.all(set.map(k=>fetchAndMaybeDecode(k))).catch(()=>{}); await new Promise(r=>setTimeout(r,600));
     }
   }
 }
-
-// Try to detect if an image exists (timeout ms)
-function ensureImageAvailable(key, timeoutMs = 2500) {
+function ensureImageAvailable(key, timeoutMs = 2000) {
   return new Promise((resolve) => {
     const url = `images/pujo/${key}.jpg`;
     const img = new Image();
@@ -352,9 +317,8 @@ function ensureImageAvailable(key, timeoutMs = 2500) {
 }
 
 /* =========================
-   UI builders & game logic
+   Grid & Game logic
    ========================= */
-
 function buildGrid(keys){
   grid.innerHTML = '';
   const hideLabels = selectedLevel === 3;
@@ -375,8 +339,6 @@ function buildGrid(keys){
     grid.appendChild(c);
   });
 }
-
-// Round pool helpers
 function makeRoundPool(){
   if(!targetPool || targetPool.length === 0){
     const cfg = LEVELS[selectedLevel];
@@ -385,26 +347,18 @@ function makeRoundPool(){
   }
   return targetPool.shift();
 }
-
-// Try to pick a target that has an image
 async function startNextRound(){
   if(!playing) return;
-
-  let attempts = 0, maxAttempts = 8;
-  let candidate = null;
-  while(attempts < maxAttempts){
+  let attempts = 0, candidate = null;
+  while(attempts < 8){
     attempts++;
     candidate = makeRoundPool();
     if(!candidate) break;
     const ok = await ensureImageAvailable(candidate, 1200);
     if(ok) break;
-    // if image not available, skip permanently this session
-    targetPool = targetPool.filter(x => x !== candidate);
     candidate = null;
   }
-
   if(!candidate){
-    // fallback grid with first available items (placeholders may appear)
     const keys = shuffle(ITEMS).slice(0,4);
     buildGrid(keys);
     currentTarget = keys[0];
@@ -412,9 +366,7 @@ async function startNextRound(){
     await speakItem(currentTarget);
     return;
   }
-
   currentTarget = candidate;
-  // choose 3 distractors preferring ones with images
   const distractors = [];
   const candidates = shuffle(ITEMS.filter(x=>x!==currentTarget));
   for(let i=0; i<candidates.length && distractors.length<3; i++){
@@ -431,7 +383,6 @@ async function startNextRound(){
   statusEl.textContent = 'Listen and tap the matching image';
   await speakItem(currentTarget);
 }
-
 function onTileClick(key){
   if(!playing && trainingPanel.style.display === 'block'){
     pauseTraining();
@@ -450,15 +401,11 @@ function onTileClick(key){
     statusEl.textContent = pick(['Almost—try again!','So close!','Keep going!']);
   }
 }
-
-function computeFinalScore(scoreVal, timeRem){
-  return (scoreVal * 1000) + Math.floor(Math.max(0,timeRem) * 5);
-}
+function computeFinalScore(scoreVal, timeRem){ return (scoreVal * 1000) + Math.floor(Math.max(0,timeRem) * 5); }
 
 /* =========================
-   Controls & lifecycle
+   Start / Stop / Levels behavior
    ========================= */
-
 function startGame(){
   ensureAudioContext();
   stopAllAudio();
@@ -473,6 +420,8 @@ function startGame(){
     if(secs <= 0){
       clearInterval(timer);
       playing = false;
+      startBtn.textContent = 'Start';
+      startBtn.classList.remove('primary');
       const final = computeFinalScore(score, secs);
       const msg = score < 5 ? pick(['You are my buddy ❤️ Let\'s play again, shall we?','Great try!']) : pick(['Wow! You crushed it! 🏆','Amazing score!']);
       statusEl.textContent = `Time’s up: Your score is ${score}. ${msg}`;
@@ -480,21 +429,34 @@ function startGame(){
       openResultModal(score, secs, final);
     }
   }, 1000);
+  startBtn.textContent = 'Stop';
+  startBtn.classList.add('primary');
+  startBtn.setAttribute('aria-pressed','true');
   startNextRound();
 }
-
+function stopGame(){
+  playing = false;
+  if(timer) clearInterval(timer);
+  stopAllAudio();
+  startBtn.textContent = 'Start';
+  startBtn.classList.remove('primary');
+  startBtn.setAttribute('aria-pressed','false');
+  statusEl.textContent = 'Stopped. Press Start to play again.';
+}
 startBtn.addEventListener('click', ()=>{
-  ensureAudioContext();
-  if(audioCtx && audioCtx.state === 'suspended'){ audioCtx.resume().catch(()=>{}); }
-  startGame();
+  // If training open, prevent start (avoids confusion)
+  if(trainingPanel.style.display === 'block') { return; }
+  if(!playing) startGame(); else stopGame();
 });
 
+/* mute */
 muteBtn.addEventListener('click', ()=>{
   soundOn = !soundOn;
   muteBtn.textContent = soundOn ? '🔊 On' : '🔇 Off';
   if(!soundOn) stopAllAudio();
 });
 
+/* level selection */
 levelBtns.forEach(b=>{
   b.addEventListener('click', ()=>{
     levelBtns.forEach(x=>x.classList.remove('active'));
@@ -506,13 +468,17 @@ levelBtns.forEach(b=>{
 });
 
 /* =========================
-   Training module
+   Training module (fixed & improved)
    ========================= */
-
 function openTraining(){
   trainingPanel.style.display = 'block';
   trainingPanel.setAttribute('aria-hidden','false');
   document.querySelector('.grid-wrap').style.display = 'none';
+  // Hide levels to avoid confusion
+  levelsWrapper.style.display = 'none';
+  trainToggle.classList.add('primary');
+  trainToggle.setAttribute('aria-pressed','true');
+  startBtn.disabled = true;
   renderTrainingPreview();
   trainIndex = 0;
   showTrainingLarge(ITEMS[0]);
@@ -522,6 +488,10 @@ function closeTraining(){
   trainingPanel.style.display = 'none';
   trainingPanel.setAttribute('aria-hidden','true');
   document.querySelector('.grid-wrap').style.display = '';
+  levelsWrapper.style.display = '';
+  trainToggle.classList.remove('primary');
+  trainToggle.setAttribute('aria-pressed','false');
+  startBtn.disabled = false;
   stopTraining();
   statusEl.textContent = 'Training closed';
 }
@@ -530,6 +500,7 @@ trainToggle.addEventListener('click', ()=>{
   if(open) closeTraining(); else openTraining();
 });
 
+/* previews */
 function renderTrainingPreview(){
   trainingPreview.innerHTML = '';
   ITEMS.forEach((k, idx)=>{
@@ -541,10 +512,9 @@ function renderTrainingPreview(){
     trainingPreview.appendChild(d);
   });
 }
-
 function showTrainingLarge(key){
-  if(preloadedImages[key] && preloadedImages[key].src) trainingLarge.querySelector('img').src = preloadedImages[key].src;
-  else trainingLarge.querySelector('img').src = `images/pujo/${key}.jpg`;
+  const src = (preloadedImages[key] && preloadedImages[key].src) ? preloadedImages[key].src : `images/pujo/${key}.jpg`;
+  trainingLarge.src = src;
   Array.from(trainingPreview.children).forEach((n,i)=> n.classList.toggle('current', ITEMS[i]===key));
   const idx = ITEMS.indexOf(key);
   if(idx >= 0) trainingPreview.children[idx].scrollIntoView({behavior:'smooth', inline:'center'});
@@ -564,7 +534,7 @@ async function trainingLoop(){
 }
 function startTraining(){ if(trainPlaying) return; trainPlaying = true; trainPlay.disabled=true; trainPause.disabled=false; trainingLoop(); }
 function pauseTraining(){ trainPlaying = false; trainPlay.disabled=false; trainPause.disabled=true; if(trainTimer){ clearTimeout(trainTimer); trainTimer=null; } stopAllAudio(); }
-function stopTraining(){ pauseTraining(); trainIndex = 0; trainingLarge.querySelector('img').src=''; Array.from(trainingPreview.children).forEach(n=> n.classList.remove('current')); }
+function stopTraining(){ pauseTraining(); trainIndex = 0; trainingLarge.src=''; Array.from(trainingPreview.children).forEach(n=> n.classList.remove('current')); }
 
 trainPlay.addEventListener('click', ()=>{ if(trainingPanel.style.display!=='block') openTraining(); startTraining(); });
 trainPause.addEventListener('click', pauseTraining);
@@ -573,9 +543,8 @@ trainPrev.addEventListener('click', ()=>{ pauseTraining(); trainIndex=(trainInde
 trainStop.addEventListener('click', ()=>{ stopTraining(); });
 
 /* =========================
-   Leaderboard, sharing, certificate
+   Leaderboard, sharing, certificate (same as before)
    ========================= */
-
 function saveResultToLeaderboard(entry){
   try{
     const lb = JSON.parse(localStorage.getItem(LB_KEY) || '[]');
