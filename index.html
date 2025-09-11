@@ -617,11 +617,11 @@ function generateCertificate(name, level, scoreVal, timeRem, finalScoreVal){
   const canvas = certCanvas; const w = 1200, h = 675; canvas.width = w; canvas.height = h; const ctx = canvas.getContext('2d');
   ctx.fillStyle = '#fff7f0'; ctx.fillRect(0,0,w,h);
   ctx.fillStyle = '#111'; ctx.font = 'bold 48px sans-serif'; ctx.textAlign='center';
-  ctx.fillText('GAMING CERTIFICATE', w/2, 100);
-  ctx.font = '20px sans-serif'; ctx.fillText('Game- Pujo — Tap & Play (PujaTap)', w/2, 140);
-  ctx.font = '20px sans-serif'; ctx.fillText('Presented by Game Creator & Designer Animesh', w/2, 170);
+  ctx.fillText('GAMING 🅒🅔🅡🅣🅘🅕🅘🅒🅐🅣🅔', w/2, 100);
+  ctx.font = '20px sans-serif'; ctx.fillText('Game - Pujo — Tap & Play (PujaTap)', w/2, 140);
+  ctx.font = '20px sans-serif'; ctx.fillText('𝒫𝓇ℯ𝓈ℯ𝓃𝓉ℯ𝒹 𝒷𝓎 𝒞𝓇ℯ𝒶𝓉ℴ𝓇 & 𝒟ℯ𝓈𝒾ℊ𝓃ℯ𝓇 𝒜𝓃𝒾𝓂ℯ𝓈𝒽', w/2, 170);
   ctx.font = 'bold 56px sans-serif'; ctx.fillText(name, w/2, 260);
-  ctx.font = '28px sans-serif'; ctx.fillStyle = '#333'; ctx.fillText(`Level ${level} • Score ${scoreVal} • Time left ${timeRem}s`, w/2, 330);
+  ctx.font = '28px sans-serif'; ctx.fillStyle = '#333'; ctx.fillText(`Level ${level} • Score ${scoreVal}`, w/2, 330);
   ctx.fillText(`Final score: ${finalScoreVal}`, w/2, 370);
   canvas.toBlob(blob=>{ const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `pujo_certificate_${(name||'player').replace(/\s+/g,'_')}.png`; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url); }, 'image/png');
 }
