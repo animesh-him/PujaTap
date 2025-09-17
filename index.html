@@ -84,7 +84,7 @@
 <div class="wrap">
   <header>
     <div>
-      <div class="title">👂 Pujo — Listen & Tap (Bengali)</div>
+      <div class="title">👂 PujaTap — Listen & Tap (Bengali)</div>
       <div class="subtitle">Tap the picture that matches the spoken Bengali word.</div>
     </div>
 
@@ -173,7 +173,7 @@ const ITEMS = [
   'siuli_phool','rosogolla'
 ];
 const LEVELS = {1:{secs:60,maxItems:15},2:{secs:120,maxItems:30},3:{secs:180,maxItems:ITEMS.length}};
-const LB_KEY = 'pujo_leaderboard_v1';
+const LB_KEY = 'puja_leaderboard_v1';
 
 /* =========================
    UI refs & state
@@ -570,7 +570,7 @@ function openResultModal(scoreVal,timeRem,finalScoreVal){
   document.getElementById('shareLinkBtn').addEventListener('click', ()=>{
     const payload = {name:(document.getElementById('playerName').value.trim()||'Anonymous'),score:scoreVal,timeRemaining:timeRem,finalScore:finalScoreVal,level:selectedLevel,when:Date.now()};
     const url = generateShareURL(payload);
-    if(navigator.share){ navigator.share({title:'Pujo score',text:`I scored ${payload.score}`,url}).catch(()=>copyToClipboard(url).then(()=>alert('Link copied'))); }
+    if(navigator.share){ navigator.share({title:'PujaTap score',text:`I scored ${payload.score}`,url}).catch(()=>copyToClipboard(url).then(()=>alert('Link copied'))); }
     else copyToClipboard(url).then(()=>alert('Link copied')).catch(()=>prompt('Copy this link:', url));
   });
   document.getElementById('downloadCertBtn').addEventListener('click', ()=>{
@@ -585,7 +585,7 @@ leaderboardBtn.addEventListener('click', ()=>{
   const html = `<h2>Local Leaderboard</h2><div style="overflow:auto"><table style="width:100%;border-collapse:collapse"><thead><tr><th>#</th><th>Name</th><th>Score</th><th>Time</th><th>Final</th><th>Level</th><th>When</th></tr></thead><tbody>${rows}</tbody></table></div><div style="margin-top:10px;display:flex;gap:8px"><button id="exportBtn" class="btn">Export JSON</button><button id="closeLB" class="btn">Close</button></div>`;
   openModal(html);
   document.getElementById('closeLB').addEventListener('click', closeModal);
-  document.getElementById('exportBtn').addEventListener('click', ()=>{ const data = JSON.stringify(lb, null, 2); downloadText('pujo_leaderboard.json', data); });
+  document.getElementById('exportBtn').addEventListener('click', ()=>{ const data = JSON.stringify(lb, null, 2); downloadText('puja_leaderboard.json', data); });
 });
 
 shareBtn.addEventListener('click', ()=>{
@@ -619,12 +619,12 @@ function generateCertificate(name, level, scoreVal, timeRem, finalScoreVal){
   ctx.fillStyle = '#fff7f0'; ctx.fillRect(0,0,w,h);
   ctx.fillStyle = '#111'; ctx.font = 'bold 48px sans-serif'; ctx.textAlign='center';
   ctx.fillText('🅖🅐🅜🅘🅝🅖 🅒🅔🅡🅣🅘🅕🅘🅒🅐🅣🅔', w/2, 120);
-  ctx.font = '20px sans-serif'; ctx.fillText('𝑮𝒂𝒎𝒆- 𝑷𝒖𝒋𝒐 — 𝑻𝒂𝒑 & 𝑷𝒍𝒂𝒚 (𝑷𝒖𝒋𝒂𝑻𝒂𝒑)', w/2, 140);
+  ctx.font = '20px sans-serif'; ctx.fillText('𝑮𝒂𝒎𝒆- 𝑷𝒖𝒋𝒂𝑻𝒂𝒑 — 𝑻𝒂𝒑 & 𝑷𝒍𝒂𝒚 ', w/2, 140);
   ctx.font = '20px sans-serif'; ctx.fillText('𝒫𝓇ℯ𝓈ℯ𝓃𝓉ℯ𝒹 𝒷𝓎 𝒞𝓇ℯ𝒶𝓉ℴ𝓇 & 𝒟ℯ𝓈𝒾ℊ𝓃ℯ𝓇 𝒜𝓃𝒾𝓂ℯ𝓈𝒽', w/2, 170);
   ctx.font = 'bold 56px sans-serif'; ctx.fillText(name, w/2, 260);
   ctx.font = '28px sans-serif'; ctx.fillStyle = '#333'; ctx.fillText(`Level ${level} • Score ${scoreVal}`, w/2, 330);
   ctx.fillText(`Final score: ${finalScoreVal}`, w/2, 370);
-  canvas.toBlob(blob=>{ const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `pujo_certificate_${(name||'player').replace(/\s+/g,'_')}.png`; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url); }, 'image/png');
+  canvas.toBlob(blob=>{ const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `pujatap_certificate_${(name||'player').replace(/\s+/g,'_')}.png`; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url); }, 'image/png');
 }
 
 /* ===== INIT ===== */
